@@ -1,0 +1,17 @@
+.env
+.env.backup
+
+composer.lock
+
+.phpunit.result.cache
+
+vendor/
+
+.phpdoc/
+docs/
+public/docs/
+public/documents/*
+!public/documents/index.php
+
+tmp/*.pem
+crontab/cron.log
