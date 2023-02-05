@@ -70,7 +70,7 @@ class PublicStripePayment extends Endpoints {
 		$exp_month    = parent::$params['exp_month'] ?? 0;
 		$exp_year     = parent::$params['exp_year'] ?? 0;
 		$cvv          = parent::$params['cvv'] ?? null;
-		$source       = parent::$params['source'] ?? 'casper-network';
+		$source       = parent::$params['source'] ?? '';
 		$drip         = (bool)(parent::$params['drip'] ?? false);
 
 		// elog(parent::$params);
@@ -469,7 +469,7 @@ class PublicStripePayment extends Endpoints {
 
 		// Add to drip campaign, if applicable
 		if (!in_array($source, WEB_SOURCES)) {
-			elog('Web source: "'.(string)$source.'" not recognized. Using "casper-network"');
+			elog('Web source: "'.(string)$source.'" not recognized. Using "turbocta"');
 			$source = 'turbocta';
 		}
 
@@ -504,7 +504,7 @@ class PublicStripePayment extends Endpoints {
 				$ch              = curl_init();
 				$headers         = array();
 				$headers[]       = "Content-Type: application/json";
-				$headers[]       = "User-Agent: Casper Association (members-api.casper.network";
+				$headers[]       = "User-Agent: FincenFetch api.fincenfetch.com";
 				$headers[]       = "Authorization: Basic $drip_api_key";
 				$data = array(
 					"subscribers" => array(

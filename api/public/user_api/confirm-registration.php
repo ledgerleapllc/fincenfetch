@@ -81,9 +81,9 @@ class UserConfirmRegistration extends Endpoints {
 
 		_exit(
 			'error',
-			'Failed to register user',
+			'Incorrect confirmation code',
 			400,
-			'Failed to register user'
+			'Incorrect confirmation code'
 		);
 	}
 }

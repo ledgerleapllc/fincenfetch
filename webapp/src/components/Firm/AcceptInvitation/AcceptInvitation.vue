@@ -1,30 +1,25 @@
 <script>
 
-import App from '../../App.vue';
-import { api } from '../api.js';
+import App from '../../../App.vue';
+import { api } from '../../api.js';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
-import LoginFooter from '../Login/LoginFooter.vue';
+import LoginFooter from '../../Login/LoginFooter.vue';
 
-import '../Login/login.css';
+import '../../Login/login.css';
 
 export default {
 	data() {
 		return {
-			loading:           false,
-			confirmation_code: '',
-			able_to_resend:    0,
-			delay:             30,
-
+			email:            '',
+			hash:             this.$route.params.hash,
+			loading:          true,
 			password:         '',
 			password2:        '',
 			password_hidden:  true,
 			password2_hidden: true,
 			min8chars:        false,
 			onenumber:        false,
-			specialchar:      false,
-
-			name:             '',
-			phone:            ''
+			specialchar:      false
 		}
 	},
 
@@ -34,41 +29,32 @@ export default {
 	},
 
 	created() {
+		if (!this.hash || this.hash == '') {
+			this.$root.routeTo('/login');
+		} else {
+			this.verifyInvitation();
+		}
 	},
 
 	mounted() {
 		let that = this;
-
-		setInterval(function() {
-			that.able_to_resend += 1;
-		},1000);
 	},
 
 	methods: {
-		async confirmAccount() {
-			this.loading = true;
-
+		async verifyInvitation() {
 			const response = await api(
-				'POST',
-				'user/confirm-registration',
+				'GET',
+				'user/verify-invitation',
 				{
-					confirmation_code: this.confirmation_code
-				},
-				this.$root.bearer_token
+					hash: this.hash
+				}
 			);
-
+			console.log(response);
 			if (response.status == 200) {
-				// console.log(response);
-				this.$root.getMe();
+				this.email   = response.detail.email;
 				this.loading = false;
 			} else {
-				this.loading = false;
-				this.$refs['errmsg'].innerHTML = 'The code you entered is invalid';
-				let that = this;
-
-				setTimeout(function() {
-					that.$refs['errmsg'].innerHTML = '&ensp;';
-				},4000);
+				this.$root.routeTo('/login');
 			}
 		},
 
@@ -104,8 +90,9 @@ export default {
 
 			const response = await api(
 				'POST',
-				'user/set-password',
+				'user/accept-invitation',
 				{
+					hash:     this.hash,
 					password: this.password
 				},
 				this.$root.bearer_token
@@ -113,70 +100,18 @@ export default {
 
 			if (response.status == 200) {
 				// console.log(response);
-				this.$root.getMe();
-				this.loading = false;
+				this.$root.bearer_token   = response.detail.bearer;
+				this.$root.session_cookie = response.detail.cookie;
+
+				this.$cookies.set('bearer_token', this.$root.bearer_token);
+				this.$cookies.set('session_cookie', this.$root.session_cookie);
+
+				window.location.reload()
 			} else {
 				this.$root.toast(
 					'Oops',
 					response.message,
 					'error'
-				);
-				this.loading = false;
-			}
-		},
-
-		async setName() {
-			this.loading = true;
-
-			const response = await api(
-				'POST',
-				'user/set-name',
-				{
-					name:  this.name,
-					phone: this.phone
-				},
-				this.$root.bearer_token
-			);
-
-			if (response.status == 200) {
-				// console.log(response);
-				this.$root.routeTo('/finished');
-				this.loading = false;
-			} else {
-				this.$root.toast(
-					'',
-					response.message,
-					'warning'
-				);
-				this.loading = false;
-			}
-		},
-
-		async resendCode() {
-			this.loading        = true;
-			this.able_to_resend = 0;
-			this.$refs['confirmation_code'].focus();
-
-			const response = await api(
-				'POST',
-				'user/resend-code',
-				{},
-				this.$root.bearer_token
-			);
-
-			if (response.status == 200) {
-				// console.log(response);
-				this.$root.toast(
-					'',
-					response.message,
-					'success'
-				);
-				this.loading = false;
-			} else {
-				this.$root.toast(
-					'',
-					response.message,
-					'warning'
 				);
 				this.loading = false;
 			}
@@ -216,24 +151,6 @@ export default {
 
 <template>
 	<div class="login-container">
-		<div class="progress-wrap">
-			<div 
-				class="progress" 
-				:style="{
-					'--progress_width': 
-					!this.$root.verified ? 
-					'20%' : (
-						!this.$root.password ? 
-						'40%' : (
-							!this.$root.pii.name ? 
-							'70%' : 
-							'100%'
-						)
-					)
-				}"
-			></div>
-		</div>
-
 		<div class="signup-box-wrap">
 			<div v-if="loading" class="ajax-box">
 				<ClipLoader size="45px" :color="this.$root.color_primary"></ClipLoader>
@@ -244,43 +161,9 @@ export default {
 					<img src="@/assets/images/logo.png" class="login-img">
 				</a>
 
-				<div 
-					v-if="!this.$root.verified" 
-					class="login-form-wrap"
-				>
+				<div class="login-form-wrap">
 					<p class="bold">
-						{{ this.$root.email }}
-					</p>
-
-					<p class="mt5">
-						A verification code has been sent to your email. Please enter it below.
-					</p>
-
-					<div class="form-group mt20">
-						<input type="email" class="form-control fincen-input" placeholder="Enter verification code" v-model="confirmation_code" ref="confirmation_code">
-
-						<button class="btn btn-success mt20 form-control" @click="confirmAccount">
-							Next
-						</button>
-					</div>
-
-					<p class="mt10 fs13 op8">
-						* Codes can take up to 1 minute to reach your inbox. Refresh your email and check spam if you don't see it immediately. 
-						<span v-if="able_to_resend > delay">
-							Click <span class="pointer text-blue underline bold" @click="this.resendCode">here</span> to resend it.
-						</span>
-					</p>
-				</div>
-
-				<div 
-					v-if="
-						this.$root.verified &&
-						!this.$root.password
-					" 
-					class="login-form-wrap"
-				>
-					<p class="bold">
-						Set new password for {{ this.$root.email }}
+						Set new password for {{ this.email }}
 					</p>
 
 					<p class="pt15 check-circle" :class="{ 'check-circle-active': min8chars }">
@@ -315,11 +198,11 @@ export default {
 					class="login-form-wrap"
 				>
 					<p class="bold">
-						Thanks, {{ this.$root.email }}
+						Thanks, {{ this.email }}
 					</p>
 
 					<p class="fs14">
-						Enter the name and contact phone number of your firm.
+						If any of the info below is inaccurate, update the name and contact phone number of your firm.
 					</p>
 
 					<div class="form-group mt20">
@@ -343,30 +226,10 @@ export default {
 			</div>
 		</div>
 
-		<p class="mt20 text-red fs14" ref="errmsg">
-			&ensp;
-		</p>
+		<LoginFooter></LoginFooter>
 	</div>
 </template>
 
 <style scoped>
-
-.progress-wrap {
-	width: 100%;
-	max-width: 700px;
-	height: 5px;
-	background-color: #e0dfe5;
-	margin-bottom: 40px;
-	border-radius: 2px;
-	position: relative;
-}
-
-.progress {
-	background-color: var(--color-primary);
-	border-radius: 2px;
-	width: var(--progress_width);
-	height: 100%;
-	transition: .3s ease;
-}
 
 </style>

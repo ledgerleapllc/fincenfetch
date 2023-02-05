@@ -10,11 +10,18 @@ export default {
 <template>
 	<div
 		v-if="
-			this.$root.role == 'admin' ||
-			this.$root.role == 'sub-admin'
+			this.$root.verified &&
+			this.$root.password &&
+			this.$root.pii.name
 		"
 	>
-		<div class="main-nav">
+		<div
+			v-if="
+				this.$root.role == 'admin' ||
+				this.$root.role == 'sub-admin'
+			"
+			class="main-nav"
+		>
 			<div class="main-nav-left">
 				<img src="@/assets/images/logo.png" class="pointer" @click="this.$root.goHome">
 
@@ -74,6 +81,124 @@ export default {
 						''
 					"
 					@click="this.$root.routeTo('/a/settings')"
+				>
+					Settings
+				</div>
+			</div>
+
+			<div class="main-nav-logout" @click="this.$root.logout()">
+				<i class="fa fa-sign-out"></i>
+				Log out
+			</div>
+		</div>
+
+
+
+
+		<div
+			v-if="this.$root.role == 'firm'"
+			class="main-nav"
+		>
+			<div class="main-nav-left">
+				<img src="@/assets/images/logo.png" class="pointer" @click="this.$root.goHome">
+
+				<div 
+					class="main-nav-item"
+					:class="
+						this.$root.route.startsWith('/f/report') ?
+						'main-nav-item-active' : 
+						''
+					"
+					@click="this.$root.routeTo('/f/reports')"
+				>
+					Reports
+				</div>
+
+				<div 
+					class="main-nav-item"
+					:class="
+						this.$root.route.startsWith('/f/compan') ?
+						'main-nav-item-active' : 
+						''
+					"
+					@click="this.$root.routeTo('/f/companies')"
+				>
+					Companies
+				</div>
+
+				<div 
+					class="main-nav-item"
+					:class="
+						this.$root.route.startsWith('/f/team') ?
+						'main-nav-item-active' : 
+						''
+					"
+					@click="this.$root.routeTo('/f/team')"
+				>
+					My Team
+				</div>
+
+				<div 
+					class="main-nav-item"
+					:class="
+						this.$root.route.startsWith('/f/billing') ?
+						'main-nav-item-active' : 
+						''
+					"
+					@click="this.$root.routeTo('/f/billing')"
+				>
+					Billing
+				</div>
+
+				<div 
+					class="main-nav-item"
+					:class="
+						this.$root.route.startsWith('/f/settings') ?
+						'main-nav-item-active' : 
+						''
+					"
+					@click="this.$root.routeTo('/f/settings')"
+				>
+					Settings
+				</div>
+			</div>
+
+			<div class="main-nav-logout" @click="this.$root.logout()">
+				<i class="fa fa-sign-out"></i>
+				Log out
+			</div>
+		</div>
+
+
+
+
+		<div
+			v-if="this.$root.role == 'company'"
+			class="main-nav"
+		>
+			<div class="main-nav-left">
+				<img src="@/assets/images/logo.png" class="pointer" @click="this.$root.goHome">
+
+				<div 
+					class="main-nav-item"
+					:class="
+						this.$root.route.startsWith('/c/report') ?
+						'main-nav-item-active' : 
+						''
+					"
+					@click="this.$root.routeTo('/c/reports')"
+				>
+					My Reports
+				</div>
+
+				<div 
+					class="main-nav-item"
+					:class="
+						this.$root.route.startsWith('/c/settings') ?
+						'main-nav-item-active' : 
+						''
+					"
+					@click="this.$root.routeTo('/c/settings')"
 				>
 					Settings
 				</div>

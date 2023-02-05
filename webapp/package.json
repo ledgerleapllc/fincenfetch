@@ -1,7 +1,7 @@
 {
-  "name": "fincefetch",
+  "name": "fincenfetch",
   "version": "0.0.1",
-  "description": "FinceFetch Portal WebApp",
+  "description": "FincenFetch Portal WebApp",
   "authors": "thomas@ledgerleap.com",
   "license": "Apache-2.0",
   "scripts": {

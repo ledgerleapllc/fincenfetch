@@ -15,7 +15,7 @@
  * @method string  fetch_setting()
  * @method bool    apply_setting()
  * @method array   get_user()
- * @method array   get_user_entities()
+ * @method array   get_firm_companies()
  * @method string  check_authorized_devices()
  * @method null    add_authorized_device()
  * @method null    log_login()
@@ -404,7 +404,7 @@ class Helper {
 	 *
 	 */
 	public static function get_user(string $guid) {
-		global $db, $suspensions;
+		global $db;
 
 		if (!$guid) {
 			return array();
@@ -418,6 +418,7 @@ class Helper {
 			password,
 			pii_data, 
 			verified,
+			verified_at,
 			created_at, 
 			twofa, 
 			totp,
@@ -449,7 +450,13 @@ class Helper {
 		}
 
 		if (!$pii_data) {
-			$pii_data = Structs::firm_info;
+			if ($user_array['role'] == 'firm') {
+				$pii_data = Structs::firm_info;
+			}
+
+			if ($user_array['role'] == 'company') {
+				$pii_data = Structs::company_info;
+			}
 		}
 
 		$user_array['pii_data'] = $pii_data;
@@ -487,55 +494,72 @@ class Helper {
 		$notifications = $notifications ?? array();
 		$user_array['notifications'] = $notifications;
 
+		// user status
+		if (!$user_array['verified']) {
+			$user_array['status'] = 'Invited';
+		} else {
+			//// get real status from subscriptions table
+			$user_array['status'] = 'Trial';
+		}
+
 		return $user_array;
 	}
 
 	/**
 	 *
-	 * Decrypts and returns a guid keyed entity PII array by user guid
+	 * Decrypts and returns company PII array by firm guid
 	 *
 	 * @param  string  $guid
-	 * @return array   $entity_array
+	 * @return array   $company_array
 	 *
 	 */
-	public static function get_user_entities(string $guid) {
+	public static function get_firm_companies(string $guid) {
 		global $db;
 
 		if (!$guid) {
 			return array();
 		}
 
-		$entity_array = array();
+		$company_array = array();
 
-		$entity_guids = $db->do_select("
-			SELECT entity_guid
-			FROM user_entity_relations
-			WHERE user_guid = '$guid'
+		$companies = $db->do_select("
+			SELECT company_guid
+			FROM  firm_company_relations
+			WHERE firm_guid = '$guid'
 		");
 
-		$entity_guids = $entity_guids ?? array();
+		$companies = $companies ?? array();
 
-		foreach ($entity_guids as $e) {
-			$entity_guid = $e['entity_guid'] ?? '';
+		foreach ($companies as &$company) {
+			$company_guid = $company['company_guid'] ?? '';
 
-			$entity_pii_enc = $db->do_select("
-				SELECT pii_data
-				FROM entities
-				WHERE entity_guid = '$entity_guid'
-				ORDER BY updated_at DESC
+			$c = $db->do_select("
+				SELECT 
+				guid,
+				email,
+				created_at,
+				verified_at,
+				clicked_invite_at,
+				pii_data
+				FROM  users
+				WHERE guid = '$company_guid'
+				ORDER BY created_at DESC
 			");
 
-			$entity_pii_enc = $entity_pii_enc[0]['pii_data'] ?? '';
-			$entity_pii     = self::decrypt_pii($entity_pii_enc);
+			$c = $c[0] ?? array();
 
-			if (!$entity_pii) {
-				$entity_pii = Structs::entity_info;
+			$company_pii_enc = $c['pii_data'] ?? '';
+			$company_pii     = self::decrypt_pii($company_pii_enc);
+
+			if (!$company_pii) {
+				$company_pii = Structs::company_info;
 			}
 
-			$entity_array[$entity_guid] = $entity_pii;
+			$c['pii_data']   = $company_pii;
+			$company_array[] = $c;
 		}
 
-		return $entity_array;
+		return $company_array;
 	}
 
 	/**

@@ -264,17 +264,25 @@ class DB {
 						"type"    => "MEDIUMTEXT",
 						"default" => ""
 					),
+					"created_at"  => array(
+						"type"    => "timestamp",
+						"default" => "NULL DEFAULT NULL"
+					),
 					"verified"    => array(
 						"type"    => "int",
 						"default" => "DEFAULT '0'"
 					),
+					"verified_at" => array(
+						"type"    => "timestamp",
+						"default" => "NULL DEFAULT NULL"
+					),
+					"clicked_invite_at" => array(
+						"type"    => "timestamp",
+						"default" => "NULL DEFAULT NULL"
+					),
 					"password"    => array(
 						"type"    => "varchar(255)",
 						"default" => "DEFAULT NULL"
-					),
-					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
 					),
 					"confirmation_code" => array(
 						"type"    => "varchar(64)",
@@ -315,63 +323,17 @@ class DB {
 					)
 				)
 			),
-			"entities"            => array(
+			"firm_company_relations" => array(
 				"fields"          => array(
-					"entity_guid" => array(
+					"firm_guid"   => array(
 						"type"    => "varchar(38)",
 						"default" => "NOT NULL"
 					),
-					"pii_data"    => array(
-						"type"    => "MEDIUMTEXT",
-						"default" => ""
-					),
-					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					),
-					"updated_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					)
-				),
-				"insert_records"  => array()
-			),
-			"user_entity_relations" => array(
-				"fields"          => array(
-					"user_guid"   => array(
-						"type"    => "varchar(38)",
-						"default" => "NOT NULL"
-					),
-					"entity_guid" => array(
+					"company_guid"=> array(
 						"type"    => "varchar(38)",
 						"default" => "NOT NULL"
 					),
 					"associated_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					)
-				),
-				"insert_records"  => array()
-			),
-			"entity_docs"         => array(
-				"fields"           => array(
-					"user_guid"   => array(
-						"type"    => "varchar(38)",
-						"default" => ""
-					),
-					"entity_guid" => array(
-						"type"    => "varchar(38)",
-						"default" => ""
-					),
-					"file_name"   => array(
-						"type"    => "varchar(255)",
-						"default" => "NOT NULL"
-					),
-					"file_url"   => array(
-						"type"    => "varchar(255)",
-						"default" => "NOT NULL"
-					),
-					"created_at"  => array(
 						"type"    => "timestamp",
 						"default" => "NULL DEFAULT NULL"
 					)

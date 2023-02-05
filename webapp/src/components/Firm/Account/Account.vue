@@ -6,16 +6,12 @@ import $ from 'jquery';
 import iziToast from 'izitoast';
 import UserDetail from './UserDetail/UserDetail.vue';
 import UserIpLog from './UserIpLog/UserIpLog.vue';
-import Validators from './Validators/Validators.vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
-import DefaultAvatarUrl from '@/assets/images/avatar.svg';
 
 export default {
 	data() {
 		return {
 			uri_category: this.$route.params.category,
-
-			avatar_url: DefaultAvatarUrl,
 			clipLoading: false
 		}
 	},
@@ -23,9 +19,7 @@ export default {
 	components: {
 		UserDetail,
 		UserIpLog,
-		Validators,
-		ClipLoader,
-		DefaultAvatarUrl
+		ClipLoader
 	},
 
 	created() {
@@ -37,11 +31,10 @@ export default {
 
 		if (
 			this.uri_category != 'detail' &&
-			this.uri_category != 'iplog' &&
-			this.uri_category != 'validators'
+			this.uri_category != 'iplog'
 		) {
 			this.uri_category = 'detail';
-			this.$root.routeTo(`/u/account/detail`);
+			this.$root.routeTo(`/f/account/detail`);
 		}
 	},
 
@@ -63,7 +56,7 @@ export default {
 	<div class="top-banner">
 		<div
 			@click="
-				this.$root.routeTo(`/u/account/detail`);
+				this.$root.routeTo(`/f/account/detail`);
 				this.uri_category = 'detail';
 			"
 			v-bind:class="
@@ -76,7 +69,7 @@ export default {
 
 		<div
 			@click="
-				this.$root.routeTo(`/u/account/iplog`);
+				this.$root.routeTo(`/f/account/iplog`);
 				this.uri_category = 'iplog';
 			"
 			v-bind:class="
@@ -86,24 +79,10 @@ export default {
 		>
 			IP Log
 		</div>
-
-		<div
-			@click="
-				this.$root.routeTo(`/u/account/validators`);
-				this.uri_category = 'validators';
-			"
-			v-bind:class="
-				'spa-tab ' +
-				(this.uri_category == 'validators' ? 'spa-tab-active' : '')
-			"
-		>
-			Validators
-		</div>
 	</div>
 
 	<UserDetail v-if="this.uri_category == 'detail'"></UserDetail>
 	<UserIpLog v-else-if="this.uri_category == 'iplog'"></UserIpLog>
-	<Validators v-else-if="this.uri_category == 'validators'"></Validators>
 
 	<div id="updateEmailModal">
 		<div class="izi-padding">

@@ -40,19 +40,6 @@ class AdminLogin extends Endpoints {
 			);
 		}
 
-		if (!$cookie) {
-			$cookie = null;
-		}
-
-		$helper->sanitize_input(
-			$cookie,
-			false,
-			Regex::$cookie['char_limit'],
-			Regex::$cookie['char_limit'],
-			Regex::$cookie['pattern'],
-			'Cookie'
-		);
-
 		$query = "
 			SELECT guid, email, password, twofa, totp, role
 			FROM users

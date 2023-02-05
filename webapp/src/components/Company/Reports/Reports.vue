@@ -17,16 +17,16 @@ export default {
 	data() {
 		return {
 			loading:    false,
-			firms:      [],
+			reports:    [],
 			columnDefs: [
 				{
-					field: 'name',
-					headerName: 'Firm Name',
+					field: 'report_guid',
+					headerName: 'Report Number',
 					sortable: true
 				},
 				{
-					field: 'guid',
-					headerName: '#',
+					field: 'company_name',
+					headerName: 'Company Name',
 					sortable: true,
 					cellRenderer: (event) => {
 						let guid = event.data.guid;
@@ -44,33 +44,23 @@ export default {
 				},
 				{
 					field: 'created_at',
-					headerName: 'Created',
+					headerName: 'Date Requested',
 					sortable: true,
 					sort: 'desc'
 				},
 				{
-					field: 'plan',
-					headerName: 'Current Plan',
+					field: 'created_by',
+					headerName: 'Requested By',
 					sortable: true
 				},
 				{
-					field: 'total_reports',
-					headerName: 'Total Reports',
-					sortable: true
-				},
-				{
-					field: 'total_companies',
-					headerName: 'Total Companies',
-					sortable: true
-				},
-				{
-					field: 'total_invoiced',
-					headerName: 'Total Invoiced',
+					field: 'type',
+					headerName: 'Type',
 					sortable: true
 				},
 				{
 					field: '',
-					headerName: 'Action',
+					headerName: '',
 					sortable: false,
 					cellRenderer: (event) => {
 						let guid = event.data.guid;
@@ -83,7 +73,7 @@ export default {
 						let guid = event.data.guid;
 
 						if (guid) {
-							this.$root.routeTo(`/a/firm/${guid}/reports`);
+							this.$root.routeTo(`/c/report/${guid}`);
 						}
 					}
 				},
@@ -96,10 +86,6 @@ export default {
 				minWidth:  100,
 				resizable: true,
 			},
-			new_firm_modal: false,
-			new_firm_name:  '',
-			new_firm_phone: '',
-			new_firm_email: ''
 		}
 	},
 
@@ -110,7 +96,7 @@ export default {
 	},
 
 	created() {
-		this.getFirms();
+		this.getReports();
 	},
 
 	mounted() {
@@ -128,7 +114,7 @@ export default {
 
 		downloadCsv() {
 			this.gridApi.exportDataAsCsv({
-				fileName: `firms-${moment().format('YYYY-MM-DD')}`
+				fileName: `reports-${moment().format('YYYY-MM-DD')}`
 			});
 		},
 
@@ -142,12 +128,12 @@ export default {
 			});
 		},
 
-		async getFirms() {
+		async getReports() {
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
 			const response = await api(
 				'GET',
-				'admin/get-firms',
+				'user/get-reports',
 				{},
 				fetch_bearer_token
 			);
@@ -155,8 +141,8 @@ export default {
 			this.$root.catch401(response);
 
 			if (response.status == 200) {
-				// console.log(response);
-				this.firms = response.detail;
+				console.log(response);
+				this.reports = response.detail;
 			} else {
 				this.loading = false;
 				this.$root.toast(
@@ -166,43 +152,6 @@ export default {
 				);
 			}
 		},
-
-		async newFirm() {
-			this.loading = true;
-			let fetch_bearer_token = this.$cookies.get('bearer_token');
-
-			const response = await api(
-				'POST',
-				'admin/invite-firm',
-				{
-					firm_name:  this.new_firm_name,
-					firm_phone: this.new_firm_phone,
-					firm_email: this.new_firm_email
-				},
-				fetch_bearer_token
-			);
-
-			this.$root.catch401(response);
-
-			if (response.status == 200) {
-				this.loading        = false;
-				this.new_firm_modal = false;
-				this.getFirms();
-
-				this.$root.toast(
-					'',
-					response.message,
-					'success'
-				);
-			} else {
-				this.loading = false;
-				this.$root.toast(
-					'',
-					response.message,
-					'error'
-				);
-			}
-		}
 	}
 };
 
@@ -212,10 +161,13 @@ export default {
 	<div class="container-fluid mt35">
 		<div class="row">
 			<div class="col-12">
-				<button class="btn btn-yellow width-150" @click="new_firm_modal = true">
-					<i class="fa fa-plus"></i>
-					New Firm
-				</button>
+				<p class="text-blue bold fs20">
+					My Reports
+				</p>
+
+				<p class="mt5">
+					This page will store all reports you need to complete and your completed reports.
+				</p>
 
 				<div class="table-card mt20">
 					<div class="table-header">
@@ -230,9 +182,6 @@ export default {
 							<span class="mr20">
 								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
 								<option value="">Display All</option>
-								<option value="trial">Trial</option>
-								<option value="active">Active</option>
-								<option value="cancelled">Cancelled</option>
 							</select>
 							</span>
 							<span>
@@ -247,7 +196,7 @@ export default {
 						:columnDefs="columnDefs"
 						@grid-ready="onGridReady"
 						:suppressExcelExport="true"
-						:rowData="firms"
+						:rowData="reports"
 						:quickFilterText="quickFilterText"
 						:defaultColDef="defaultColDef"
 						pagination="true"
@@ -258,52 +207,4 @@ export default {
 		</div>
 	</div>
 
-	<Modal
-		v-model="new_firm_modal"
-		max-width="600px"
-		:click-out="false"
-	>
-		<div class="modal-container" style="max-width: 600px;">
-			<div v-if="loading" class="loading-overlay">
-				<ClipLoader size="45px" :color="this.$root.color_primary"></ClipLoader>
-			</div>
-
-			<h5 class="pb15">
-				New Firm
-			</h5>
-
-			<p class="mt20">
-				This form will create an account in demo status and send an invitation email to the user containing a signup link.
-			</p>
-
-			<div class="form-group mt20">
-				<p class="bold">
-					Name of Firm
-				</p>
-				<input type="text" class="form-control fincen-input mt5" v-model="new_firm_name">
-
-				<p class="bold mt20">
-					Contact Phone Number
-				</p>
-				<input type="tel" class="form-control fincen-input mt5" v-model="new_firm_phone" :onkeydown="this.$root.inputPhoneFormat">
-
-				<p class="bold mt20">
-					Email
-				</p>
-				<input type="email" class="form-control fincen-input mt5" v-model="new_firm_email">
-			</div>
-
-			<button class="btn btn-success form-control btn-inline ml0 mt40" @click="newFirm">
-				Create Firm
-			</button>
-
-			<button class="btn btn-neutral form-control mt15 mb10" @click="new_firm_modal = false">
-				Cancel
-			</button>
-		</div>
-	</Modal>
 </template>
-
-<style scoped>
-
-</style>

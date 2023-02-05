@@ -27,6 +27,11 @@ RewriteRule ^user/update-totp/?$ /user_api/update-totp.php [NC]
 RewriteRule ^user/confirm-totp/?$ /user_api/confirm-totp.php [NC]
 RewriteRule ^user/get-iplog/?$ /user_api/get-iplog.php [NC]
 RewriteRule ^user/update-avatar/?$ /user_api/update-avatar.php [NC]
+RewriteRule ^user/verify-invitation/?$ /user_api/verify-invitation.php [NC]
+RewriteRule ^user/accept-invitation/?$ /user_api/accept-invitation.php [NC]
+RewriteRule ^user/get-companies/?$ /user_api/get-companies.php [NC]
+RewriteRule ^user/invite-company/?$ /user_api/invite-company.php [NC]
+RewriteRule ^user/create-report/?$ /user_api/create-report.php [NC]
 
 # ADMIN API
 RewriteRule ^admin/login/?$ /admin_api/login.php [NC]
@@ -47,6 +52,9 @@ RewriteRule ^admin/update-password/?$ /admin_api/update-password.php [NC]
 RewriteRule ^admin/get-iplog/?$ /admin_api/get-iplog.php [NC]
 RewriteRule ^admin/update-setting/?$ /admin_api/update-setting.php [NC]
 RewriteRule ^admin/update-avatar/?$ /admin_api/update-avatar.php [NC]
+RewriteRule ^admin/invite-firm/?$ /admin_api/invite-firm.php [NC]
+RewriteRule ^admin/get-firms/?$ /admin_api/get-firms.php [NC]
+RewriteRule ^admin/get-firm/?$ /admin_api/get-firm.php [NC]
 
 # PUBLIC API
 RewriteRule ^public/contact-us/?$ /public_api/contact-us.php [NC]

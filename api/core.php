@@ -148,6 +148,18 @@ function elog($msg) {
 }
 
 /**
+ * Error logging only in DEV mode
+ *
+ * @param string $msg
+ *
+ */
+function dlog($msg) {
+	if (DEV_MODE) {
+		elog($msg);
+	}
+}
+
+/**
  * Cron logging
  *
  * @param string $msg
@@ -590,6 +602,52 @@ function authenticate_session($required_clearance = 1) {
 	}
 
 	return $selection;
+}
+
+function authenticate_role(
+	$auth_user,
+	$required_role = 'admin'
+) {
+	$provided_role = strtolower($auth_user['role'] ?? '');
+
+	if (gettype($required_role) == 'array') {
+		foreach ($required_role as $r) {
+			if (in_array($provided_role, $required_role)) {
+				return true;
+			}
+		}
+
+		_exit(
+			'error',
+			'Unauthorized',
+			403,
+			'Role Unauthorized'
+		);
+	} else
+
+	if (gettype($required_role) == 'string') {
+		$required_role = strtolower($required_role);
+
+		if ($provided_role == $required_role) {
+			return true;
+		} else {
+			_exit(
+				'error',
+				'Unauthorized',
+				403,
+				'Role Unauthorized'
+			);
+		}
+	}
+
+	else {
+		_exit(
+			'error',
+			'Unauthorized',
+			403,
+			'Role Unauthorized'
+		);
+	}
 }
 
 /**

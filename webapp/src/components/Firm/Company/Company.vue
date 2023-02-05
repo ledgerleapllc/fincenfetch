@@ -4,15 +4,17 @@ import App from '../../../App.vue';
 import { api } from '../../api.js';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import Reports from './Reports/Reports.vue';
-import Companies from './Companies/Companies.vue';
+import LinksSent from './LinksSent/LinksSent.vue';
+import AccessLog from './AccessLog/AccessLog.vue';
+import HelpfulTools from './HelpfulTools/HelpfulTools.vue';
 
 export default {
 	data() {
 		return {
 			loading:       false,
-			firm_guid:     this.$route.params.firm_guid,
+			company_guid:  this.$route.params.company_guid,
 			uri_category:  this.$route.params.category,
-			selected_firm: {
+			selected_company: {
 				email:           null,
 				status:          null,
 				created_at:      null,
@@ -28,53 +30,53 @@ export default {
 	components: {
 		ClipLoader,
 		Reports,
-		Companies
+		LinksSent,
+		AccessLog,
+		HelpfulTools
 	},
 
 	created() {
-		this.loadFirm();
+		this.loadCompany();
 	},
 
 	mounted() {
 		let that = this;
 
 		if (
-			!this.firm_guid ||
-			this.firm_guid == ''
+			!this.company_guid ||
+			this.company_guid == ''
 		) {
-			this.$root.routeTo(`/a/firm/`);
+			this.$root.routeTo(`/f/companies/`);
 			return false;
 		}
 
 		if (
 			this.uri_category != 'reports' &&
-			this.uri_category != 'companies' &&
-			this.uri_category != 'billing' &&
-			this.uri_category != 'team' &&
-			this.uri_category != 'history' &&
-			this.uri_category != 'settings'
+			this.uri_category != 'links-sent' &&
+			this.uri_category != 'access-log' &&
+			this.uri_category != 'helpful-tools'
 		) {
 			this.uri_category = 'reports';
-			this.$root.routeTo(`/a/firm/${this.firm_guid}/reports`);
+			this.$root.routeTo(`/f/company/${this.company_guid}/reports`);
 		}
 	},
 
 	watch: {
 		'$route' (to, from) {
-			this.firm_guid    = this.$route.params.firm_guid;
+			this.company_guid = this.$route.params.company_guid;
 			this.uri_category = this.$route.params.category;
 		},
 	},
 
 	methods: {
-		async loadFirm() {
+		async loadCompany() {
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
 			const response = await api(
 				'GET',
-				'admin/get-firm',
+				'user/get-company',
 				{
-					firm_guid: this.firm_guid
+					company_guid: this.company_guid
 				},
 				fetch_bearer_token
 			);
@@ -83,9 +85,9 @@ export default {
 
 			if (response.status == 200) {
 				console.log(response);
-				this.selected_firm = response.detail;
+				this.selected_company = response.detail;
 			} else {
-				this.$root.routeTo('/a/firms');
+				// this.$root.routeTo('/f/companies');
 			}
 		}
 	}
@@ -99,44 +101,30 @@ export default {
 			<div 
 				class="sub-view-menu-item"
 				:class="uri_category == 'reports' ? 'sub-view-menu-item-active' : ''"
-				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/reports')"
+				@click="this.$root.routeTo('/f/company/'+company_guid+'/reports')"
 			>
 				Reports
 			</div>
 			<div 
 				class="sub-view-menu-item"
-				:class="uri_category == 'companies' ? 'sub-view-menu-item-active' : ''"
-				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/companies')"
+				:class="uri_category == 'links-sent' ? 'sub-view-menu-item-active' : ''"
+				@click="this.$root.routeTo('/f/company/'+company_guid+'/links-sent')"
 			>
-				Companies
+				Links Sent
 			</div>
 			<div 
 				class="sub-view-menu-item"
-				:class="uri_category == 'billing' ? 'sub-view-menu-item-active' : ''"
-				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/billing')"
+				:class="uri_category == 'access-log' ? 'sub-view-menu-item-active' : ''"
+				@click="this.$root.routeTo('/f/company/'+company_guid+'/access-log')"
 			>
-				Billing & Plan
+				Access Log
 			</div>
 			<div 
 				class="sub-view-menu-item"
-				:class="uri_category == 'team' ? 'sub-view-menu-item-active' : ''"
-				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/team')"
+				:class="uri_category == 'helpful-tools' ? 'sub-view-menu-item-active' : ''"
+				@click="this.$root.routeTo('/f/company/'+company_guid+'/helpful-tools')"
 			>
-				Manage Team
-			</div>
-			<div 
-				class="sub-view-menu-item"
-				:class="uri_category == 'history' ? 'sub-view-menu-item-active' : ''"
-				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/history')"
-			>
-				History
-			</div>
-			<div 
-				class="sub-view-menu-item"
-				:class="uri_category == 'settings' ? 'sub-view-menu-item-active' : ''"
-				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/settings')"
-			>
-				Settings
+				Helpful Tools
 			</div>
 		</div>
 		<div class="sub-view-right">
@@ -144,28 +132,28 @@ export default {
 				<p class="bold float-right fs14">
 					Account Created:&ensp;
 					<ClipLoader 
-						v-if="selected_firm.created_at === null" 
+						v-if="selected_company.created_at === null" 
 						size="12px" 
 						:color="this.$root.color_primary"
 						class="inline"
 					></ClipLoader>
 					<span v-else class="text-blue">
-						{{ this.$root.dateTimeToDate(selected_firm.created_at) }}
+						{{ this.$root.dateTimeToDate(selected_company.created_at) }}
 					</span>
 				</p>
 
 				<ClipLoader 
-					v-if="selected_firm.pii_data.name === null" 
+					v-if="selected_company.pii_data.name === null" 
 					size="30px" 
 					:color="this.$root.color_primary"
 					class="inline"
 				></ClipLoader>
 				<p v-else class="bold fs20">
-					{{ selected_firm.pii_data.name }}
+					{{ selected_company.pii_data.name }}
 					<span class="bold fs14">
 						- User ID: 
 						<span class="text-blue">
-							{{ firm_guid }}
+							{{ company_guid }}
 						</span>
 					</span>
 				</p>
@@ -173,58 +161,60 @@ export default {
 				<p class="bold mt20">
 					Primary Email:&ensp;
 					<ClipLoader 
-						v-if="selected_firm.email === null" 
+						v-if="selected_company.email === null" 
 						size="15px" 
 						:color="this.$root.color_primary"
 						class="inline"
 					></ClipLoader>
 					<span v-else class="text-blue">
-						{{ selected_firm.email }}
+						{{ selected_company.email }}
 					</span>
 				</p>
 
 				<p class="bold mt5">
 					Phone Number:&ensp;
 					<ClipLoader 
-						v-if="selected_firm.pii_data.phone === null" 
+						v-if="selected_company.pii_data.phone === null" 
 						size="15px" 
 						:color="this.$root.color_primary"
 						class="inline"
 					></ClipLoader>
 					<span v-else class="text-blue">
-						{{ selected_firm.pii_data.phone }}
+						{{ selected_company.pii_data.phone }}
 					</span>
 				</p>
 
 				<p class="bold mt5">
 					Total Companies:&ensp;
 					<ClipLoader 
-						v-if="selected_firm.total_companies === null" 
+						v-if="selected_company.total_companies === null" 
 						size="15px" 
 						:color="this.$root.color_primary"
 						class="inline"
 					></ClipLoader>
 					<span v-else class="text-blue">
-						{{ selected_firm.companies.length }}
+						{{ selected_company.companies.length }}
 					</span>
 				</p>
 
 				<p class="bold mt5">
 					Status:&ensp;
 					<ClipLoader 
-						v-if="selected_firm.status === null" 
+						v-if="selected_company.status === null" 
 						size="15px" 
 						:color="this.$root.color_primary"
 						class="inline"
 					></ClipLoader>
 					<span v-else class="text-blue">
-						{{ this.$root.ucfirst(selected_firm.status) }}
+						{{ this.$root.ucfirst(selected_company.status) }}
 					</span>
 				</p>
 			</div>
 
 			<Reports v-if="uri_category == 'reports'"></Reports>
-			<Companies v-if="uri_category == 'companies'"></Companies>
+			<LinksSent v-if="uri_category == 'links-sent'"></LinksSent>
+			<AccessLog v-if="uri_category == 'access-log'"></AccessLog>
+			<HelpfulTools v-if="uri_category == 'helpful-tools'"></HelpfulTools>
 		</div>
 	</div>
 </template>

@@ -9,6 +9,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import Landing from '@/components/Landing/Landing.vue';
 import Signup from '@/components/Signup/Signup.vue';
 import Login from '@/components/Login/Login.vue';
+import Logout from '@/components/Login/Logout.vue';
 import ForgotPassword from '@/components/Login/ForgotPassword.vue';
 import ResetPassword from '@/components/Login/ResetPassword.vue';
 import ConfirmAccount from '@/components/ConfirmAccount/ConfirmAccount.vue';
@@ -17,13 +18,23 @@ import Terms from '@/components/Terms/Terms.vue';
 import PrivacyPolicy from '@/components/PrivacyPolicy/PrivacyPolicy.vue';
 import NotFound from '@/components/NotFound/NotFound.vue';
 
-/* user routes */
-import UserAccount from '@/components/User/Account/Account.vue';
-
 /* admin routes */
 import AdminAccount from '@/components/Admin/Account/Account.vue';
 import AdminFirms from '@/components/Admin/Firms/Firms.vue';
 import AdminFirm from '@/components/Admin/Firm/Firm.vue';
+
+/* firm routes */
+import FirmAcceptInvitation from '@/components/Firm/AcceptInvitation/AcceptInvitation.vue';
+import FirmReports from '@/components/Firm/Reports/Reports.vue';
+import FirmCompanies from '@/components/Firm/Companies/Companies.vue';
+import FirmCompany from '@/components/Firm/Company/Company.vue';
+import FirmAccount from '@/components/Firm/Account/Account.vue';
+
+/* company routes */
+import CompanyAcceptInvitation from '@/components/Company/AcceptInvitation/AcceptInvitation.vue';
+import CompanyCompleteInvite from '@/components/Company/CompleteInvite/CompleteInvite.vue';
+import CompanyReports from '@/components/Company/Reports/Reports.vue';
+import CompanyAccount from '@/components/Company/Account/Account.vue';
 
 import './assets/css/main.css'
 
@@ -51,6 +62,14 @@ const router = createRouter({
 				display_name: ''
 			}
 		},
+		// {
+		// 	path: '/',
+		// 	redirect: to => {
+		// 		return {
+		// 			name: 'Login'
+		// 		}
+		// 	},
+		// },
 		{
 			path: '/terms-of-service',
 			name: 'Terms',
@@ -79,25 +98,12 @@ const router = createRouter({
 			}
 		},
 		{
-			path: '/u/',
-			redirect: to => {
-				return {
-					name: 'Login'
-				}
-			},
+			path: '/logout',
+			name: 'Logout',
+			component: Logout,
 			meta: {
-				protected: false
-			}
-		},
-		{
-			path: '/a/',
-			redirect: to => {
-				return {
-					name: 'Login'
-				}
-			},
-			meta: {
-				protected: false
+				title: `${app_name} - Logout`,
+				display_name: 'Logout'
 			}
 		},
 		{
@@ -128,17 +134,6 @@ const router = createRouter({
 			}
 		},
 		{
-			path: '/finished',
-			name: 'Finished',
-			component: Finished,
-			meta: {
-				title: `${app_name} - Finished`,
-				display_name: 'Finished'
-			}
-		},
-
-		/* User endpoints */
-		{
 			path: '/confirm-account',
 			name: 'ConfirmAccount',
 			component: ConfirmAccount,
@@ -149,24 +144,45 @@ const router = createRouter({
 			}
 		},
 		{
-			path: '/u/account',
-			redirect: to => {
-				return {
-					path: '/u/account/detail'
-				}
-			},
+			path: '/finished',
+			name: 'Finished',
+			component: Finished,
 			meta: {
-				protected: true
+				title: `${app_name} - Finished`,
+				display_name: 'Finished'
 			}
 		},
 		{
-			path: '/u/account/:category?',
-			name: 'UserAccount',
-			component: UserAccount,
+			path: '/f/',
+			redirect: to => {
+				return {
+					name: 'Login'
+				}
+			},
 			meta: {
-				title: `${app_name} - Account Settings`,
-				display_name: 'Account Settings',
-				protected: true
+				protected: false
+			}
+		},
+		{
+			path: '/c/',
+			redirect: to => {
+				return {
+					name: 'Login'
+				}
+			},
+			meta: {
+				protected: false
+			}
+		},
+		{
+			path: '/a/',
+			redirect: to => {
+				return {
+					name: 'Login'
+				}
+			},
+			meta: {
+				protected: false
 			}
 		},
 
@@ -228,6 +244,152 @@ const router = createRouter({
 			path: '/a/account/:category?',
 			name: 'AdminAccount',
 			component: AdminAccount,
+			meta: {
+				title: `${app_name} - Account Settings`,
+				display_name: 'Account Settings',
+				protected: true
+			}
+		},
+
+		/* Firm endpoints */
+		{
+			path: '/f/accept-invitation/:hash?',
+			name: 'FirmAcceptInvitation',
+			component: FirmAcceptInvitation,
+			meta: {
+				title: `${app_name} - Accept Invitation`,
+				display_name: 'Accept Invitation'
+			}
+		},
+		{
+			path: '/f/dashboard',
+			redirect: to => {
+				return {
+					path: '/f/reports'
+				}
+			},
+			meta: {
+				protected: true
+			}
+		},
+		{
+			path: '/f/reports',
+			name: 'FirmReports',
+			component: FirmReports,
+			meta: {
+				title: `${app_name} - Reports`,
+				display_name: 'Reports',
+				protected: true
+			}
+		},
+		{
+			path: '/f/companies',
+			name: 'FirmCompanies',
+			component: FirmCompanies,
+			meta: {
+				title: `${app_name} - Companies`,
+				display_name: 'Companies',
+				protected: true
+			}
+		},
+		{
+			path: '/f/company',
+			redirect: to => {
+				return {
+					path: '/f/companies'
+				}
+			},
+			meta: {
+				protected: true
+			}
+		},
+		{
+			path: '/f/company/:company_guid/:category?',
+			name: 'FirmCompany',
+			component: FirmCompany,
+			meta: {
+				title: `${app_name} - Firm`,
+				display_name: 'Firm',
+				protected: true
+			}
+		},
+		{
+			path: '/f/account',
+			redirect: to => {
+				return {
+					path: '/f/account/detail'
+				}
+			},
+			meta: {
+				protected: true
+			}
+		},
+		{
+			path: '/f/account/:category?',
+			name: 'FirmAccount',
+			component: FirmAccount,
+			meta: {
+				title: `${app_name} - Account Settings`,
+				display_name: 'Account Settings',
+				protected: true
+			}
+		},
+
+		/* Company endpoints */
+		{
+			path: '/c/accept-invitation/:hash?',
+			name: 'CompanyAcceptInvitation',
+			component: CompanyAcceptInvitation,
+			meta: {
+				title: `${app_name} - Accept Invitation`,
+				display_name: 'Accept Invitation'
+			}
+		},
+		{
+			path: '/c/complete-invite',
+			name: 'CompanyCompleteInvite',
+			component: CompanyCompleteInvite,
+			meta: {
+				title: `${app_name} - Invitation Complete`,
+				display_name: 'Invitation Complete'
+			}
+		},
+		{
+			path: '/c/dashboard',
+			redirect: to => {
+				return {
+					path: '/c/reports'
+				}
+			},
+			meta: {
+				protected: true
+			}
+		},
+		{
+			path: '/c/reports',
+			name: 'CompanyReports',
+			component: CompanyReports,
+			meta: {
+				title: `${app_name} - Reports`,
+				display_name: 'Reports',
+				protected: true
+			}
+		},
+		{
+			path: '/c/account',
+			redirect: to => {
+				return {
+					path: '/c/account/detail'
+				}
+			},
+			meta: {
+				protected: true
+			}
+		},
+		{
+			path: '/c/account/:category?',
+			name: 'CompanyAccount',
+			component: CompanyAccount,
 			meta: {
 				title: `${app_name} - Account Settings`,
 				display_name: 'Account Settings',

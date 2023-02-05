@@ -111,7 +111,8 @@ export default {
 				window.location.pathname.startsWith('/validator') ||
 				window.location.pathname.startsWith('/finished') ||
 				window.location.pathname.startsWith('/terms-of-service') ||
-				window.location.pathname.startsWith('/privacy-policy')
+				window.location.pathname.startsWith('/privacy-policy') ||
+				window.location.pathname.startsWith('/c/complete-invite')
 			) {
 				return true;
 			}
@@ -123,9 +124,12 @@ export default {
 			if (
 				window.location.pathname.startsWith('/signup') ||
 				window.location.pathname.startsWith('/login') ||
+				window.location.pathname.startsWith('/logout') ||
 				window.location.pathname.startsWith('/forgot-password') ||
 				window.location.pathname.startsWith('/reset-password') ||
-				window.location.pathname.startsWith('/confirm-account')
+				window.location.pathname.startsWith('/confirm-account') ||
+				window.location.pathname.startsWith('/f/accept-invitation') ||
+				window.location.pathname.startsWith('/c/accept-invitation')
 			) {
 				return true;
 			}
@@ -172,13 +176,21 @@ export default {
 				this.twofa          = parseInt(response.detail.twofa);
 				this.totp           = parseInt(response.detail.totp);
 
-				let pre_route = '/u';
+				let pre_route = 'f';
 
 				if (
 					this.role == 'admin' ||
 					this.role == 'sub-admin'
 				) {
-					pre_route = '/a';
+					pre_route = 'a';
+				}
+
+				if (this.role == 'firm') {
+					pre_route = 'f';
+				}
+
+				if (this.role == 'company') {
+					pre_route = 'c';
 				}
 
 				let pii_data = response.detail.pii_data;
@@ -205,14 +217,14 @@ export default {
 				}
 
 				let path_split = window.location.pathname.split('/');
-				let path0 = path_split[0];
+				let path0 = path_split[1] ?? '';
 
 				if (this.in_common_zone()) {
-					this.routeTo(`${pre_route}/dashboard`);
+					this.routeTo(`/${pre_route}/reports`);
 				}
 
-				if (pre_route.charAt(0) != `/${path0}`) {
-					this.routeTo(`${pre_route}/dashboard`);
+				if (pre_route != path0) {
+					this.routeTo(`/${pre_route}/reports`);
 				}
 
 				// notifications banner
@@ -232,6 +244,16 @@ export default {
 						}
 					});
 				}
+
+				/*this.notifications[0] = {
+					notification_id: 34,
+					title: 'title',
+					message: 'lajsdkja hskda hksd aksdj alkj dsa akljs dlkja hsdkja hlskdj halksjd hakljsd hlkajs hdlkaj hsdlkaj shdlkaj hsdlkaj hsdlkja hsldkja hslkdjh alskdj halksjd halkjs dhlkajs dhlkajs dhlkajh dasashjhlkajsh dlkajhs dlkja hsdlkja hsdlkja hsdlkja hsldkj ahlksdj halksjd halkjsd hlakjs dhlkaj dhlkas',
+					type: 'info',
+					dismissable: true,
+					priority: 1,
+					cta: ''
+				}*/
 
 				// refresh bearer_token cookie
 				this.$cookies.set('bearer_token', this.bearer_token);
@@ -335,7 +357,7 @@ export default {
 			if (response.status == 200) {
 				this.clearSession();
 				this.toast('Logout', response.message, 'success');
-				this.routeToLogin()
+				this.routeTo('/logout')
 			}
 		},
 
@@ -608,6 +630,40 @@ export default {
 			let split = s.slice(0, l - 3);
 
 			return `${split}...`;
+		},
+
+		shortGUID(s) {
+			if (typeof s != 'string') {
+				return s;
+			}
+
+			let split  = s.split('-');
+			let letter = split[0] ?? '';
+			let hash   = split[1] ?? '';
+
+			if (
+				letter == '' ||
+				hash   == ''
+			) {
+				return s;
+			}
+
+			return `${letter}-${hash}`;
+		},
+
+		dateTimeToDate(dt = '') {
+			if (!dt) {
+				return dt;
+			}
+
+			if (typeof dt != 'string') {
+				return dt;
+			}
+
+			let s = dt.split(' ');
+			let t = s[0] ?? '';
+
+			return t;
 		},
 
 		randomHash(l = 10) {

@@ -22,6 +22,20 @@ class UserSetPassword extends Endpoints {
 		$guid     = $auth['guid'] ?? '';
 		$password = parent::$params['password'] ?? '';
 
+		if(
+			!$password ||
+			strlen($password) < 8 ||
+			!preg_match('/[\'\/~`\!@#\$%\^&\*\(\)_\-\+=\{\}\[\]\|;:"\<\>,\.\?\\\]/', $password) ||
+			!preg_match('/[0-9]/', $password)
+		) {
+			_exit(
+				'error',
+				'Invalid password. Must be at least 8 characters long, contain at least one (1) special character, and one (1) number',
+				400,
+				'Invalid password. Failed complexity requirements'
+			);
+		}
+
 		$already_set = $db->do_select("
 			SELECT password
 			FROM users

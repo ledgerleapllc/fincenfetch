@@ -17,11 +17,11 @@ export default {
 	data() {
 		return {
 			loading:    false,
-			firms:      [],
+			companies:  [],
 			columnDefs: [
 				{
-					field: 'name',
-					headerName: 'Firm Name',
+					field: 'pii_data.name',
+					headerName: 'Businesses',
 					sortable: true
 				},
 				{
@@ -37,35 +37,30 @@ export default {
 					},
 				},
 				{
-					field: 'status',
-					headerName: 'Status',
+					field: 'created_at',
+					headerName: 'First Link Sent',
 					filter: true,
 					sortable: true
 				},
 				{
-					field: 'created_at',
-					headerName: 'Created',
+					field: 'clicked_invite_at',
+					headerName: 'First Link Access',
+					sortable: true
+				},
+				{
+					field: 'latest_link_sent',
+					headerName: 'Latest Link Sent',
 					sortable: true,
 					sort: 'desc'
 				},
 				{
-					field: 'plan',
-					headerName: 'Current Plan',
+					field: 'latest_link_access',
+					headerName: 'Latest Link Access',
 					sortable: true
 				},
 				{
 					field: 'total_reports',
 					headerName: 'Total Reports',
-					sortable: true
-				},
-				{
-					field: 'total_companies',
-					headerName: 'Total Companies',
-					sortable: true
-				},
-				{
-					field: 'total_invoiced',
-					headerName: 'Total Invoiced',
 					sortable: true
 				},
 				{
@@ -83,7 +78,7 @@ export default {
 						let guid = event.data.guid;
 
 						if (guid) {
-							this.$root.routeTo(`/a/firm/${guid}/reports`);
+							this.$root.routeTo(`/f/company/${guid}/reports`);
 						}
 					}
 				},
@@ -96,10 +91,10 @@ export default {
 				minWidth:  100,
 				resizable: true,
 			},
-			new_firm_modal: false,
-			new_firm_name:  '',
-			new_firm_phone: '',
-			new_firm_email: ''
+			new_company_modal: false,
+			new_company_name:  '',
+			new_company_phone: '',
+			new_company_email: ''
 		}
 	},
 
@@ -110,7 +105,7 @@ export default {
 	},
 
 	created() {
-		this.getFirms();
+		this.getCompanies();
 	},
 
 	mounted() {
@@ -128,7 +123,7 @@ export default {
 
 		downloadCsv() {
 			this.gridApi.exportDataAsCsv({
-				fileName: `firms-${moment().format('YYYY-MM-DD')}`
+				fileName: `companies-${moment().format('YYYY-MM-DD')}`
 			});
 		},
 
@@ -142,12 +137,12 @@ export default {
 			});
 		},
 
-		async getFirms() {
+		async getCompanies() {
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
 			const response = await api(
 				'GET',
-				'admin/get-firms',
+				'user/get-companies',
 				{},
 				fetch_bearer_token
 			);
@@ -156,7 +151,7 @@ export default {
 
 			if (response.status == 200) {
 				// console.log(response);
-				this.firms = response.detail;
+				this.companies = response.detail;
 			} else {
 				this.loading = false;
 				this.$root.toast(
@@ -167,17 +162,17 @@ export default {
 			}
 		},
 
-		async newFirm() {
+		async newCompany() {
 			this.loading = true;
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
 			const response = await api(
 				'POST',
-				'admin/invite-firm',
+				'user/invite-company',
 				{
-					firm_name:  this.new_firm_name,
-					firm_phone: this.new_firm_phone,
-					firm_email: this.new_firm_email
+					company_name:  this.new_company_name,
+					company_phone: this.new_company_phone,
+					company_email: this.new_company_email
 				},
 				fetch_bearer_token
 			);
@@ -185,9 +180,9 @@ export default {
 			this.$root.catch401(response);
 
 			if (response.status == 200) {
-				this.loading        = false;
-				this.new_firm_modal = false;
-				this.getFirms();
+				this.loading          = false;
+				this.new_company_modal = false;
+				this.getCompanies();
 
 				this.$root.toast(
 					'',
@@ -212,10 +207,22 @@ export default {
 	<div class="container-fluid mt35">
 		<div class="row">
 			<div class="col-12">
-				<button class="btn btn-yellow width-150" @click="new_firm_modal = true">
+				<button class="btn btn-yellow width-200" @click="new_company_modal = true">
 					<i class="fa fa-plus"></i>
-					New Firm
+					Invite Company
 				</button>
+
+				<!-- <div style="display: flex; flex-direction: row; position: relative; width: 400px;">
+					<div style="min-width: 100px;">
+						aisd ak dkak sd
+					</div>
+					<div style="width: 40px; min-width: 40px; text-align: center;">
+						>
+					</div>
+					<div style="min-width: 100px;">
+						asjkd 
+					</div>
+				</div> -->
 
 				<div class="table-card mt20">
 					<div class="table-header">
@@ -230,9 +237,6 @@ export default {
 							<span class="mr20">
 								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
 								<option value="">Display All</option>
-								<option value="trial">Trial</option>
-								<option value="active">Active</option>
-								<option value="cancelled">Cancelled</option>
 							</select>
 							</span>
 							<span>
@@ -247,7 +251,7 @@ export default {
 						:columnDefs="columnDefs"
 						@grid-ready="onGridReady"
 						:suppressExcelExport="true"
-						:rowData="firms"
+						:rowData="companies"
 						:quickFilterText="quickFilterText"
 						:defaultColDef="defaultColDef"
 						pagination="true"
@@ -259,7 +263,7 @@ export default {
 	</div>
 
 	<Modal
-		v-model="new_firm_modal"
+		v-model="new_company_modal"
 		max-width="600px"
 		:click-out="false"
 	>
@@ -269,41 +273,37 @@ export default {
 			</div>
 
 			<h5 class="pb15">
-				New Firm
+				Invite Company
 			</h5>
 
 			<p class="mt20">
-				This form will create an account in demo status and send an invitation email to the user containing a signup link.
+				This form will create an account for your client and send an invitation email to the user containing a signup link.
 			</p>
 
 			<div class="form-group mt20">
 				<p class="bold">
-					Name of Firm
+					Company Name
 				</p>
-				<input type="text" class="form-control fincen-input mt5" v-model="new_firm_name">
+				<input type="text" class="form-control fincen-input mt5" v-model="new_company_name">
 
 				<p class="bold mt20">
 					Contact Phone Number
 				</p>
-				<input type="tel" class="form-control fincen-input mt5" v-model="new_firm_phone" :onkeydown="this.$root.inputPhoneFormat">
+				<input type="tel" class="form-control fincen-input mt5" v-model="new_company_phone" :onkeydown="this.$root.inputPhoneFormat">
 
 				<p class="bold mt20">
 					Email
 				</p>
-				<input type="email" class="form-control fincen-input mt5" v-model="new_firm_email">
+				<input type="email" class="form-control fincen-input mt5" v-model="new_company_email">
 			</div>
 
-			<button class="btn btn-success form-control btn-inline ml0 mt40" @click="newFirm">
-				Create Firm
+			<button class="btn btn-success form-control btn-inline ml0 mt40" @click="newCompany">
+				Send Invitation
 			</button>
 
-			<button class="btn btn-neutral form-control mt15 mb10" @click="new_firm_modal = false">
+			<button class="btn btn-neutral form-control mt15 mb10" @click="new_company_modal = false">
 				Cancel
 			</button>
 		</div>
 	</Modal>
 </template>
-
-<style scoped>
-
-</style>

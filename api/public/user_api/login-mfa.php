@@ -24,10 +24,6 @@ class UserLoginMfa extends Endpoints {
 		$guid     = parent::$params['guid'] ?? null;
 		$cookie   = parent::$params['cookie'] ?? null;
 
-		if (!$cookie) {
-			$cookie = null;
-		}
-
 		$helper->sanitize_input(
 			$guid,
 			true,
@@ -35,15 +31,6 @@ class UserLoginMfa extends Endpoints {
 			Regex::$guid['char_limit'],
 			Regex::$guid['pattern'],
 			'GUID'
-		);
-
-		$helper->sanitize_input(
-			$cookie,
-			false,
-			Regex::$cookie['char_limit'],
-			Regex::$cookie['char_limit'],
-			Regex::$cookie['pattern'],
-			'Cookie'
 		);
 
 		$AUTHENTICATED = false;

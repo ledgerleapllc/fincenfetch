@@ -96,7 +96,7 @@ Updated backend vhost
 Updated frontend vhost
 ```
 <VirtualHost *:80>
-    ServerName fincenfetch.com
+    ServerName app.fincenfetch.com
     DocumentRoot /var/www/fincenfetch/webapp/dist
 
     <Directory /var/www/fincenfetch/webapp/dist>

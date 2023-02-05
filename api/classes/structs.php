@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * Data structure templates for Casper Association Portal encrypted PII objects
+ * Data structure templates for encrypted PII objects
  *
  * @static firm_info      Struct for user pii.
  * @static company_info   Struct for entity pii.
@@ -17,8 +17,9 @@ class Structs {
 	);
 
 	public const company_info = array(
-		"entity_name"          => "",
-		"entity_type"          => "",
+		"name"                 => "",
+		"type"                 => "",
+		"phone"                => "",
 		"registration_number"  => "",
 		"registration_country" => "",
 		"tax_id"               => "",
