@@ -95,6 +95,47 @@ class DB {
 		}
 
 		$my_tables = array(
+			"reports"             => array(
+				"fields"          => array(
+					"report_guid" => array(
+						"type"    => "varchar(38)",
+						"default" => "DEFAULT NULL"
+					),
+					"company_guid"=> array(
+						"type"    => "varchar(38)",
+						"default" => "DEFAULT NULL"
+					),
+					"firm_guid"   => array(
+						"type"    => "varchar(38)",
+						"default" => "DEFAULT NULL"
+					),
+					"report_type" => array(
+						"type"    => "enum('initial', 'updated')",
+						"default" => "DEFAULT 'initial'"
+					),
+					"status"      => array(
+						"type"    => "enum('start', 'resume', 'view')",
+						"default" => "DEFAULT 'start'"
+					),
+					"pii_data"    => array(
+						"type"    => "MEDIUMTEXT",
+						"default" => "NOT NULL"
+					),
+					"filing_year" => array(
+						"type"    => "varchar(6)",
+						"default" => ""
+					),
+					"created_at"  => array(
+						"type"    => "timestamp",
+						"default" => "NULL DEFAULT NULL"
+					),
+					"updated_at"  => array(
+						"type"    => "timestamp",
+						"default" => "NULL DEFAULT NULL"
+					),
+				),
+				"insert_records"  => array()
+			),
 			"contact_recipients"  => array(
 				"fields"          => array(
 					"guid"        => array(
@@ -596,72 +637,6 @@ class DB {
 						"default" => "NULL DEFAULT NULL"
 					)
 				),
-				"insert_records"  => array()
-			),
-			"shufti"              => array(
-				"fields"          => array(
-					"id"          => array(
-						"type"    => "int",
-						"default" => "NOT NULL AUTO_INCREMENT"
-					),
-					"guid"        => array(
-						"type"    => "varchar(38)",
-						"default" => "DEFAULT NULL",
-					),
-					"reference_id" => array(
-						"type"    => "varchar(128)",
-						"default" => "NOT NULL"
-					),
-					"status"      => array(
-						"type"    => "enum('pending','denied','approved')",
-						"default" => "DEFAULT 'pending'"
-					),
-					"data"        => array(
-						"type"    => "MEDIUMTEXT",
-						"default" => ""
-					),
-					"declined_reason"=> array(
-						"type"    => "TEXT",
-						"default" => ""
-					),
-					"id_check"    => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT '0'"
-					),
-					"address_check" => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT '0'"
-					),
-					"background_check" => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT '0'"
-					),
-					"manual_review" => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT '0'"
-					),
-					"reviewed_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					),
-					"reviewed_by" => array(
-						"type"    => "varchar(38)",
-						"default" => ""
-					),
-					"cmp_checked" => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT 0"
-					),
-					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					),
-					"updated_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					)
-				),
-				"primary"         => "id",
 				"insert_records"  => array()
 			),
 			"permissions"         => array(

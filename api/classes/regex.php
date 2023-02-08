@@ -71,7 +71,7 @@ class Regex {
 
 	public static $guid = array(
 		"char_limit" => 38,
-		"pattern"    => "/^((A-)|(F-)|(C-))[0-9a-fA-F-]+$/"
+		"pattern"    => "/^((A-)|(F-)|(C-)|(R-))[0-9a-fA-F-]+$/"
 	);
 
 	public static $company_name = array(

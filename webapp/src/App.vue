@@ -868,50 +868,6 @@ export default {
 	display: inline-block;
 }
 
-.inline {
-	display: inline-block;
-}
-
-.nostyle:hover,
-.nostyle:focus,
-.nostyle:visited,
-.nostyle {
-	color: inherit;
-	text-decoration: none;
-	font-size: inherit;
-	font-weight: inherit;
-}
-
-.bold { font-weight: bold; }
-
-.underline {
-	text-decoration: underline;
-	text-underline-position: under;
-}
-
-.emphasize {
-	font-style: italic;
-	font-weight: 200 !important;
-	text-decoration: underline;
-}
-
-.pointer { cursor: pointer; }
-
-.pointer-none { pointer-events: none; }
-
-.float-right {
-	float: right;
-}
-
-.div-disabled {
-	opacity: 0.35;
-	pointer-events: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
 #mfaModal,
 #newdeviceModal {
 	display: none;

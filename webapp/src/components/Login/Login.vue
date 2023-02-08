@@ -9,6 +9,7 @@ import './login.css';
 export default {
 	data() {
 		return {
+			start_action:  this.$route.query.start,
 			inputPassword: "",
 			inputMfa:      "",
 			step:          1,
@@ -18,7 +19,9 @@ export default {
 	},
 
 	mounted() {
-		//
+		if (this.start_action) {
+			this.$cookies.set('start_action', this.start_action);
+		}
 	},
 
 	components: {

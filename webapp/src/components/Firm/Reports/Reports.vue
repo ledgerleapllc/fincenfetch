@@ -20,19 +20,19 @@ export default {
 			reports:    [],
 			columnDefs: [
 				{
-					field: 'name',
-					headerName: 'Firm Name',
+					field: 'company.pii_data.name',
+					headerName: 'Company Name',
 					sortable: true
 				},
 				{
-					field: 'guid',
-					headerName: '#',
+					field: 'report_guid',
+					headerName: 'Report Number',
 					sortable: true,
 					cellRenderer: (event) => {
-						let guid = event.data.guid;
+						let report_guid = event.data.report_guid;
 
-						if (guid) {
-							return this.$root.shortGUID(guid);
+						if (report_guid) {
+							return this.$root.shortGUID(report_guid);
 						}
 					},
 				},
@@ -49,23 +49,8 @@ export default {
 					sort: 'desc'
 				},
 				{
-					field: 'plan',
+					field: 'company.status',
 					headerName: 'Current Plan',
-					sortable: true
-				},
-				{
-					field: 'total_reports',
-					headerName: 'Total Reports',
-					sortable: true
-				},
-				{
-					field: 'total_companies',
-					headerName: 'Total Companies',
-					sortable: true
-				},
-				{
-					field: 'total_invoiced',
-					headerName: 'Total Invoiced',
 					sortable: true
 				},
 				{
@@ -73,17 +58,15 @@ export default {
 					headerName: 'Action',
 					sortable: false,
 					cellRenderer: (event) => {
-						let guid = event.data.guid;
+						let report_guid = event.data.report_guid;
 
-						if (guid) {
-							return `<button class="btn btn-yellow btn-sm fs11">View Details</button>`;
-						}
+						return `<button class="btn btn-yellow btn-sm fs11 width-100">View Details</button>`;
 					},
 					onCellClicked: (event) => {
-						let guid = event.data.guid;
+						let report_guid = event.data.report_guid;
 
-						if (guid) {
-							this.$root.routeTo(`/f/report/${guid}`);
+						if (report_guid) {
+							this.$root.routeTo(`/f/report/${report_guid}`);
 						}
 					}
 				},
@@ -119,8 +102,7 @@ export default {
 					tax_id:               '',
 					document_url:         '',
 					document_page:        ''
-				},
-				total_reports: 0
+				}
 			}
 		}
 	},
@@ -144,7 +126,27 @@ export default {
 		quickFilterCategory: "quickFilterCategorySelect",
 		selected_company(data) {
 			console.log(data);
-			this.selected_company = data;
+			if (data) {
+				this.selected_company = data;
+			} else {
+				this.selected_company = {
+					guid:              '',
+					email:             '',
+					created_at:        '',
+					verified_at:       '',
+					clicked_invite_at: '',
+					pii_data: {
+						name:                 '',
+						type:                 '',
+						phone:                '',
+						registration_number:  '',
+						registration_country: '',
+						tax_id:               '',
+						document_url:         '',
+						document_page:        ''
+					}
+				}
+			}
 		}
 	},
 
@@ -223,7 +225,6 @@ export default {
 			console.log(this.new_company_name);
 			console.log(this.new_company_phone);
 			console.log(this.new_company_email);
-			////
 			this.loading = true;
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
@@ -232,8 +233,8 @@ export default {
 				'user/create-report',
 				{
 					company_name:  this.new_company_name,
-					company_phone: this.new_company_phone,
-					company_email: this.new_company_email
+					company_email: this.new_company_email,
+					company_phone: this.new_company_phone
 				},
 				fetch_bearer_token
 			);
@@ -242,6 +243,15 @@ export default {
 
 			if (response.status == 200) {
 				console.log(response);
+				this.new_report_modal = false;
+				this.loading          = false;
+				this.getReports();
+				this.getExistingCompanies();
+				this.$root.toast(
+					'',
+					response.message,
+					'success'
+				);
 			} else {
 				this.loading = false;
 				this.$root.toast(
@@ -271,7 +281,6 @@ export default {
 			console.log(this.selected_company.guid);
 			console.log(this.selected_company.email);
 			console.log(this.selected_company.pii_data.name);
-			////
 			this.loading = true;
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
@@ -281,7 +290,8 @@ export default {
 				{
 					company_guid:  this.selected_company.guid,
 					company_name:  this.selected_company.pii_data.name,
-					company_email: this.selected_company.email
+					company_email: this.selected_company.email,
+					company_phone: this.selected_company.pii_data.phone
 				},
 				fetch_bearer_token
 			);
@@ -290,6 +300,14 @@ export default {
 
 			if (response.status == 200) {
 				console.log(response);
+				this.new_report_modal = false;
+				this.loading          = false;
+				this.getReports();
+				this.$root.toast(
+					'',
+					response.message,
+					'success'
+				);
 			} else {
 				this.loading = false;
 				this.$root.toast(
@@ -325,8 +343,8 @@ export default {
 							</span>
 							<span class="mr20">
 								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
-								<option value="">Display All</option>
-							</select>
+									<option value="">Display All</option>
+								</select>
 							</span>
 							<span>
 								<i class="fa fa-download text-blue pointer fs28 mt5" v-on:click="downloadCsv()"></i>
@@ -388,7 +406,7 @@ export default {
 					</td>
 				</tr>
 				<tr><td>&ensp;</td></tr>
-				<tr>
+				<tr :class="companies.length == 0 ? 'div-disabled' : ''">
 					<td class="pl15 pr15 pointer">
 						<input 
 							type="radio" 
@@ -418,14 +436,14 @@ export default {
 				<input type="text" class="form-control fincen-input mt5" v-model="new_company_name">
 
 				<p class="bold mt20">
-					Contact Phone Number
-				</p>
-				<input type="tel" class="form-control fincen-input mt5" v-model="new_company_phone" :onkeydown="this.$root.inputPhoneFormat">
-
-				<p class="bold mt20">
 					Company Email
 				</p>
 				<input type="email" class="form-control fincen-input mt5" v-model="new_company_email">
+
+				<p class="bold mt20">
+					Contact Phone Number
+				</p>
+				<input type="tel" class="form-control fincen-input mt5" v-model="new_company_phone" :onkeydown="this.$root.inputPhoneFormat">
 
 				<button class="btn btn-success form-control btn-inline ml0 mt40" @click="newCompanyAndReport">
 					Send Link to Collect BOI
@@ -443,8 +461,8 @@ export default {
 				<select 
 					class="form-select fincen-input mt5 pointer" 
 					v-model="selected_company"
+					placeholder="Select"
 				>
-					<option value="">Select</option>
 					<option 
 						v-for="company in companies" 
 						:value="company"
@@ -460,6 +478,15 @@ export default {
 					type="email" 
 					class="form-control fincen-input mt5" 
 					v-model="selected_company.email"
+				>
+
+				<p class="bold mt20">
+					Confirm Company Phone
+				</p>
+				<input 
+					type="tel" 
+					class="form-control fincen-input mt5" 
+					v-model="selected_company.pii_data.phone"
 				>
 
 				<button class="btn btn-success form-control btn-inline ml0 mt40" @click="newReport">

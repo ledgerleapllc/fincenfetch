@@ -611,10 +611,8 @@ function authenticate_role(
 	$provided_role = strtolower($auth_user['role'] ?? '');
 
 	if (gettype($required_role) == 'array') {
-		foreach ($required_role as $r) {
-			if (in_array($provided_role, $required_role)) {
-				return true;
-			}
+		if (in_array($provided_role, $required_role)) {
+			return true;
 		}
 
 		_exit(
@@ -628,7 +626,10 @@ function authenticate_role(
 	if (gettype($required_role) == 'string') {
 		$required_role = strtolower($required_role);
 
-		if ($provided_role == $required_role) {
+		if (
+			$provided_role == $required_role &&
+			$provided_role != ''
+		) {
 			return true;
 		} else {
 			_exit(

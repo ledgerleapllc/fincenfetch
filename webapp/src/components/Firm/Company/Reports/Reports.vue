@@ -155,10 +155,10 @@ export default {
 							</span>
 							<span class="mr20">
 								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
-								<option value="">Display All</option>
-								<option value="complete">Complete</option>
-								<option value="incomplete">Incomplete</option>
-							</select>
+									<option value="">Display All</option>
+									<option value="complete">Complete</option>
+									<option value="incomplete">Incomplete</option>
+								</select>
 							</span>
 							<span>
 								<i class="fa fa-download text-blue pointer fs28 mt5" v-on:click="downloadCsv()"></i>

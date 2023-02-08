@@ -24,9 +24,10 @@ class UserGetCompanies extends Endpoints {
 			//// get real reports data
 			// $company['latest_link_sent']   = '2022-12-13 00:00:00';
 			// $company['latest_link_access'] = '2022-12-13 00:00:00';
-			$company['total_reports']      = 0;
+			$company['total_reports'] = count($companies);
 		}
 
+		dlog('companies');
 		dlog($companies);
 		_exit(
 			'success',

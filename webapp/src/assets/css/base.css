@@ -37,17 +37,21 @@
 
   --color-primary: #353df9;
   --color-secondary: #4047f9;
-  --color-green: #3edc64;
-  --color-yellow: #f7e161;
+  --color-green: #69FFA2;
+  --color-yellow: #FFE156;
   --color-orange: #ffab40;
   --color-red: #ff2d2e;
+  --color-greybtn: #DAD9E0;
 
   --color-primary-transparent: rgba(53, 61, 249, 0.1);
   --color-secondary-transparent: rgba(64, 71, 249, 0.1);
-  --color-green-transparent: rgba(62, 220, 100, 0.1);
-  --color-yellow-transparent: rgba(247, 225, 97, 0.1);
+  --color-green-transparent: rgba(105, 255, 162, 0.1);
+  --color-yellow-transparent: rgba(255, 225, 86, 0.1);
   --color-orange-transparent: rgba(255, 171, 64, 0.1);
   --color-red-transparent: rgba(255, 45, 46, 0.1);
+
+  --main-nav-height: 60px;
+  --message-area-height: 110px;
 }
 
 :root {

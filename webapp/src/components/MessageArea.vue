@@ -63,7 +63,7 @@ export default {
 
 .message-area {
 	width: 100%;
-	height: 110px;
+	height: var(--message-area-height);
 	display: flex;
 	flex-direction: row;
 	position: relative;

@@ -22,17 +22,12 @@ export default {
 				{
 					field: 'report_guid',
 					headerName: 'Report Number',
-					sortable: true
-				},
-				{
-					field: 'company_name',
-					headerName: 'Company Name',
 					sortable: true,
 					cellRenderer: (event) => {
-						let guid = event.data.guid;
+						let report_guid = event.data.report_guid;
 
-						if (guid) {
-							return this.$root.shortGUID(guid);
+						if (report_guid) {
+							return this.$root.shortGUID(report_guid);
 						}
 					},
 				},
@@ -40,7 +35,22 @@ export default {
 					field: 'status',
 					headerName: 'Status',
 					filter: true,
-					sortable: true
+					sortable: true,
+					cellRenderer: (event) => {
+						let status = event.data.status;
+
+						if (status == 'start') {
+							return 'Not started';
+						}
+
+						if (status == 'resume') {
+							return 'Started';
+						}
+
+						if (status == 'view') {
+							return 'Complete';
+						}
+					}
 				},
 				{
 					field: 'created_at',
@@ -49,31 +59,52 @@ export default {
 					sort: 'desc'
 				},
 				{
-					field: 'created_by',
+					field: 'firm_guid',
 					headerName: 'Requested By',
-					sortable: true
+					sortable: true,
+					cellRenderer: (event) => {
+						let firm_guid = event.data.firm_guid;
+
+						if (firm_guid) {
+							return this.$root.shortGUID(firm_guid);
+						}
+					},
 				},
 				{
-					field: 'type',
+					field: 'report_type',
 					headerName: 'Type',
-					sortable: true
+					sortable: true,
+					cellRenderer: (event) => {
+						let report_type = event.data.report_type;
+
+						return `${this.$root.ucfirst(event.data.report_type)} Report`;
+					},
 				},
 				{
 					field: '',
 					headerName: '',
 					sortable: false,
 					cellRenderer: (event) => {
-						let guid = event.data.guid;
+						let status = event.data.status;
 
-						if (guid) {
-							return `<button class="btn btn-yellow btn-sm fs11">View Details</button>`;
+						if (status == 'start') {
+							return `<button class="btn btn-sm btn-green fs11 width-100">Start</button>`;
+						}
+
+						if (status == 'resume') {
+							return `<button class="btn btn-sm btn-yellow fs11 width-100">Resume</button>`;
+						}
+
+						if (status == 'view') {
+							return `<button class="btn btn-sm btn-grey fs11 width-100">View</button>`;
 						}
 					},
-					onCellClicked: (event) => {
-						let guid = event.data.guid;
 
-						if (guid) {
-							this.$root.routeTo(`/c/report/${guid}`);
+					onCellClicked: (event) => {
+						let report_guid = event.data.report_guid;
+
+						if (report_guid) {
+							this.$root.routeTo(`/c/report/${report_guid}`);
 						}
 					}
 				},
@@ -143,6 +174,15 @@ export default {
 			if (response.status == 200) {
 				console.log(response);
 				this.reports = response.detail;
+
+				// cookie check for auto-redirect to report flow
+				let cook = this.$cookies.get('start_action');
+
+				this.$cookies.remove('start_action');
+
+				if (cook && cook != 'undefined') {
+					this.$root.routeTo(`/c/report/${cook}`);
+				}
 			} else {
 				this.loading = false;
 				this.$root.toast(
@@ -181,8 +221,8 @@ export default {
 							</span>
 							<span class="mr20">
 								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
-								<option value="">Display All</option>
-							</select>
+									<option value="">Display All</option>
+								</select>
 							</span>
 							<span>
 								<i class="fa fa-download text-blue pointer fs28 mt5" v-on:click="downloadCsv()"></i>

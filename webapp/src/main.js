@@ -26,6 +26,7 @@ import AdminFirm from '@/components/Admin/Firm/Firm.vue';
 /* firm routes */
 import FirmAcceptInvitation from '@/components/Firm/AcceptInvitation/AcceptInvitation.vue';
 import FirmReports from '@/components/Firm/Reports/Reports.vue';
+import FirmReport from '@/components/Firm/Report/Report.vue';
 import FirmCompanies from '@/components/Firm/Companies/Companies.vue';
 import FirmCompany from '@/components/Firm/Company/Company.vue';
 import FirmAccount from '@/components/Firm/Account/Account.vue';
@@ -34,6 +35,7 @@ import FirmAccount from '@/components/Firm/Account/Account.vue';
 import CompanyAcceptInvitation from '@/components/Company/AcceptInvitation/AcceptInvitation.vue';
 import CompanyCompleteInvite from '@/components/Company/CompleteInvite/CompleteInvite.vue';
 import CompanyReports from '@/components/Company/Reports/Reports.vue';
+import CompanyReport from '@/components/Company/Report/Report.vue';
 import CompanyAccount from '@/components/Company/Account/Account.vue';
 
 import './assets/css/main.css'
@@ -283,6 +285,27 @@ const router = createRouter({
 			}
 		},
 		{
+			path: '/f/report',
+			redirect: to => {
+				return {
+					path: '/f/reports'
+				}
+			},
+			meta: {
+				protected: true
+			}
+		},
+		{
+			path: '/f/report/:report_guid/:category?',
+			name: 'FirmReport',
+			component: FirmReport,
+			meta: {
+				title: `${app_name} - Report`,
+				display_name: 'Report',
+				protected: true
+			}
+		},
+		{
 			path: '/f/companies',
 			name: 'FirmCompanies',
 			component: FirmCompanies,
@@ -372,6 +395,27 @@ const router = createRouter({
 			meta: {
 				title: `${app_name} - Reports`,
 				display_name: 'Reports',
+				protected: true
+			}
+		},
+		{
+			path: '/c/report',
+			redirect: to => {
+				return {
+					path: '/c/reports'
+				}
+			},
+			meta: {
+				protected: true
+			}
+		},
+		{
+			path: '/c/report/:report_guid/:category?',
+			name: 'CompanyReport',
+			component: CompanyReport,
+			meta: {
+				title: `${app_name} - Report`,
+				display_name: 'Report',
 				protected: true
 			}
 		},

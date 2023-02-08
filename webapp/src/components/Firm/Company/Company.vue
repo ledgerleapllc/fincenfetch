@@ -221,58 +221,6 @@ export default {
 
 <style scoped>
 
-.sub-view {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	position: relative;
-}
 
-.sub-view-left {
-	width: 250px;
-	min-height: calc(100vh - 170px);
-	height: 100%;
-	border-right: 1px solid #e0e0e0;
-	padding: 20px;
-}
-
-.sub-view-right {
-	width: calc(100% - 250px);
-	height: 100%;
-	position: relative;
-}
-
-.sub-view-header {
-	width: 100%;
-	padding: 25px;
-	background-color: #fafafa;
-	border-bottom: 1px solid #eee;
-}
-
-.sub-view-menu-item {
-	display: flex;
-	align-items: center;
-	width: 100%;
-	height: 40px;
-	padding-left: 15px;
-	padding-right: 15px;
-	font-weight: bold;
-	border-left: 4px solid transparent;
-	cursor: pointer;
-	transition: 0.3s;
-}
-
-.sub-view-menu-item:hover,
-.sub-view-menu-item:active {
-	background-color: var(--color-primary-transparent);
-	color: var(--color-primary);
-	transition: 0.1s;
-}
-
-.sub-view-menu-item-active {
-	border-left: 4px solid var(--color-primary);
-	background-color: var(--color-primary-transparent);
-	color: var(--color-primary);
-}
 
 </style>

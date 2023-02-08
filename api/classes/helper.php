@@ -507,6 +507,69 @@ class Helper {
 
 	/**
 	 *
+	 * Fetches and decrypts client facing user array and returns simple object for front end. PII safe
+	 *
+	 * @param  string  $guid
+	 * @return array   $user_array
+	 *
+	 */
+	public function get_user_safe(string $guid) {
+		global $db;
+
+		if (!$guid) {
+			return array();
+		}
+
+		$query = "
+			SELECT
+			guid,
+			role, 
+			email, 
+			pii_data,
+			verified
+			FROM users
+			WHERE guid = '$guid'
+		";
+
+		$user_array = $db->do_select($query);
+		$user_array = $user_array[0] ?? null;
+
+		if (!$user_array) {
+			return array();
+		}
+
+		$pii_data_enc = $user_array['pii_data'] ?? '';
+		$pii_data = self::decrypt_pii($pii_data_enc);
+
+		if (isset($user_array['pii_data'])) {
+			unset($user_array['pii_data']);
+		}
+
+		if (!$pii_data) {
+			if ($user_array['role'] == 'firm') {
+				$pii_data = Structs::firm_info;
+			}
+
+			if ($user_array['role'] == 'company') {
+				$pii_data = Structs::company_info;
+			}
+		}
+
+		$user_array['pii_data'] = $pii_data;
+
+		// user status
+		if (!$user_array['verified']) {
+			$user_array['status'] = 'Invited';
+		} else {
+			//// get real status from subscriptions table
+			$user_array['status'] = 'Trial';
+		}
+
+		return $user_array;
+	}
+
+	/**
+	 *
 	 * Decrypts and returns company PII array by firm guid
 	 *
 	 * @param  string  $guid
@@ -875,9 +938,11 @@ class Helper {
 	 * - A: Admin guid
 	 * - F: Firm guid
 	 * - C: Company guid
+	 * - R: Report guid
 	 *
 	 * Example: F-eaa4a536-3ab3-35aa-4c4c-c4fe30ab200c
 	 *
+	 * @param  string $role
 	 * @return string
 	 *
 	 */
@@ -892,6 +957,10 @@ class Helper {
 
 		if ($role == 'company') {
 			$prepend = 'C-';
+		}
+
+		if ($role == 'report') {
+			$prepend = 'R-';
 		}
 
 		return (
@@ -1126,6 +1195,7 @@ class Helper {
 					email LIKE '%$partial_email2%'
 				)
 			)
+			AND subject = '$subject'
 			ORDER BY id DESC
 		");
 		$similarity_check = $similarity_check ?? array();
@@ -1134,8 +1204,8 @@ class Helper {
 			$sid = $item['id'] ?? 0;
 			$db->do_query("
 				UPDATE schedule
-				SET complete = 1
-				WHERE id = $sid
+				SET   complete = 1
+				WHERE id       = $sid
 			");
 		}
 

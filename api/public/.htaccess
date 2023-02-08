@@ -32,6 +32,8 @@ RewriteRule ^user/accept-invitation/?$ /user_api/accept-invitation.php [NC]
 RewriteRule ^user/get-companies/?$ /user_api/get-companies.php [NC]
 RewriteRule ^user/invite-company/?$ /user_api/invite-company.php [NC]
 RewriteRule ^user/create-report/?$ /user_api/create-report.php [NC]
+RewriteRule ^user/get-reports/?$ /user_api/get-reports.php [NC]
+RewriteRule ^user/get-report/?$ /user_api/get-report.php [NC]
 
 # ADMIN API
 RewriteRule ^admin/login/?$ /admin_api/login.php [NC]

@@ -215,7 +215,7 @@ export default {
 <style scoped>
 
 .main-nav {
-	height: 60px; 
+	height: var(--main-nav-height); 
 	width: 100%; 
 	padding-left: 25px;
 	display: flex; 
