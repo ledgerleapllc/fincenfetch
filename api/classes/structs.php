@@ -34,39 +34,20 @@ class Structs {
 	);
 
 	public const report_info = array(
-		"report_year" => "YYYY",
-		"dbas" => array(
+		"report_year"        => "YYYY",
+		"company_name"       => "",
+		"dbas"               => array(
 			/* hash('dba'.$company_guid.$report_guid.$index) => Structs::dba */
 		),
-		"applicants" => array(
-			/* hash('applicant'.$company_guid.$report_guid.$index) => Structs::applicant */
-		),
-		"offices" => array(
-			/* hash('office'.$company_guid.$report_guid.$index) => Structs::office */
-		),
-		"beneficial_owners" => array(
+		"office"             => Structs::office,
+		"formation_location" => Structs::formation_location,
+		"tax_number"         => "",
+		"beneficial_owners"  => array(
 			/* hash('beneficial_owner'.$company_guid.$report_guid.$index) => Structs::beneficial_owner */
 		)
 	);
 
 	public const dba = "";
-
-	public const applicant  = array(
-		"created_at"        => "YYYY-mm-dd HH:ii:ss UTC",
-		"updated_at"        => "YYYY-mm-dd HH:ii:ss UTC",
-		"fincen_number"     => "",
-		"first_name"        => "",
-		"middle_name"       => "",
-		"last_name"         => "",
-		"suffix"            => "",
-		"dob"               => "YYYY-mm-dd",
-		"country"           => "",
-		"address1"          => "",
-		"address2"          => "",
-		"city"              => "",
-		"state_or_province" => "",
-		"postal_code"       => ""
-	);
 
 	public const office = array(
 		"created_at"        => "YYYY-mm-dd HH:ii:ss UTC",
@@ -77,6 +58,13 @@ class Structs {
 		"city"              => "",
 		"state_or_province" => "",
 		"postal_code"       => ""
+	);
+
+	public const formation_location = array(
+		"created_at"        => "YYYY-mm-dd HH:ii:ss UTC",
+		"updated_at"        => "YYYY-mm-dd HH:ii:ss UTC",
+		"formed_at"         => "YYYY-mm-dd HH:ii:ss UTC",
+		"state_or_province" => ""
 	);
 
 	public const beneficial_owner = array(
@@ -107,7 +95,8 @@ class Structs {
 			"number"              => "",
 			"issue_date"          => "YYYY-mm-dd",
 			"expire_date"         => "YYYY-mm-dd",
-			"country_of_issuance" => ""
+			"country_of_issuance" => "",
+			"sha256_checksum"     => ""
 		)
 	);
 }

@@ -118,15 +118,6 @@ class AdminResetPassword extends Endpoints {
 				);
 			}
 
-			if($email != $fetched_email) {
-				_exit(
-					'error',
-					'Error resetting password. Not authorized',
-					403,
-					'Error resetting password. Not authorized'
-				);
-			}
-
 			// clear reset code
 			$query = "
 				DELETE FROM password_resets

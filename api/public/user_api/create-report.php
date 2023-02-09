@@ -309,18 +309,6 @@ class UserCreateReport extends Endpoints {
 			// add report_year
 			$pii_data['report_year'] = $filing_year;
 
-			// add dba
-			$dba_hash = hash(
-				'sha256', 
-				'dba'.$company_guid.$report_guid.'0'
-			);
-
-			$pii_data['dbas']
-			[$dba_hash] = Structs::dba;
-
-			$pii_data['dbas']
-			[$dba_hash] = $company_name;
-
 			// finish encoding initial data, and encrypt.
 			$pii_enc  = $helper->encrypt_pii($pii_data);
 

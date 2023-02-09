@@ -79,38 +79,6 @@ i {
   font-weight: bold;
 }
 
-.btn {
-  font-weight: 600;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  border-radius: 2px;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
-  border: none;
-  transition: 0.3s;
-}
-
-.btn:hover,
-.btn:focus {
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
-  border: none;
-  transition: 0.1s;
-  opacity: 0.9;
-}
-
-.btn-success {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  transition: 0.3s;
-}
-
-.btn-success:hover,
-.btn-success:focus {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  transition: 0.1s;
-  opacity: 0.9;
-}
-
 .inline {
   display: inline-block;
 }
@@ -136,6 +104,10 @@ i {
 .emphasize {
   font-style: italic;
   text-decoration: underline;
+}
+
+.italic {
+  font-style: italic;
 }
 
 .pointer { cursor: pointer; }
@@ -354,6 +326,7 @@ i {
 .text-black { color: #000; }
 .text-soft-black { color: var(--vt-c-black-mute); }
 .text-green { color: var(--color-green); }
+.text-darkgreen { color: var(--color-darkgreen); }
 .text-yellow { color: var(--color-yellow); }
 .text-orange { color: var(--color-orange); }
 .text-red { color: var(--color-red); }
@@ -372,9 +345,49 @@ i {
   width: 200px;
 }
 
+.width-300 {
+  width: 300px;
+}
+
+.width-400 {
+  width: 400px;
+}
+
 .container-fluid {
   padding-left: 25px;
   padding-right: 25px;
+}
+
+.btn {
+  font-weight: 600;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-radius: 2px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+  border: none;
+  transition: 0.3s;
+}
+
+.btn:hover,
+.btn:focus {
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+  border: none;
+  transition: 0.1s;
+  opacity: 0.9;
+}
+
+.btn-success {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  transition: 0.3s;
+}
+
+.btn-success:hover,
+.btn-success:focus {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  transition: 0.1s;
+  opacity: 0.9;
 }
 
 .btn-yellow {
@@ -409,6 +422,19 @@ i {
 .btn-grey:hover,
 .btn-grey:focus {
   background-color: var(--color-greybtn);
+  transition: 0.1s;
+  opacity: 0.9;
+}
+
+.btn-black {
+  background-color: var(--vt-c-black-mute);
+  color: #fff;
+}
+
+.btn-black:hover,
+.btn-black:focus {
+  background-color: var(--vt-c-black-mute);
+  color: #fff;
   transition: 0.1s;
   opacity: 0.9;
 }

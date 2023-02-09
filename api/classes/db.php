@@ -133,6 +133,14 @@ class DB {
 						"type"    => "timestamp",
 						"default" => "NULL DEFAULT NULL"
 					),
+					"previous_report" => array(
+						"type"    => "int(1)",
+						"default" => "DEFAULT '0'"
+					),
+					"reviewed"    => array(
+						"type"    => "int(1)",
+						"default" => "DEFAULT '0'"
+					)
 				),
 				"insert_records"  => array()
 			),
