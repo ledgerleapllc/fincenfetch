@@ -4,6 +4,7 @@
  * Data structure templates for encrypted PII objects
  *
  * @static max_size
+ * @static user_info
  * @static firm_info
  * @static company_info
  * @static report_info
@@ -16,21 +17,14 @@
 class Structs {
 	static $max_size = 64;
 
-	public const firm_info = array(
+	public const user_info = array(
 		"name"  => "",
-		"ip"    => "",
-		"phone" => ""
+		"ip"    => ""
 	);
 
-	public const company_info  = array(
-		"name"                 => "",
-		"type"                 => "",
-		"phone"                => "",
-		"registration_number"  => "",
-		"registration_country" => "",
-		"tax_id"               => "",
-		"document_url"         => "",
-		"document_page"        => ""
+	public const firm_info = array(
+		"name"  => "",
+		"phone" => ""
 	);
 
 	public const report_info = array(

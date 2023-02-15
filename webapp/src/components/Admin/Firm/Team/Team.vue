@@ -13,50 +13,42 @@ export default {
 	data() {
 		return {
 			loading:    false,
-			companies:  [],
+			team:       [],
 			columnDefs: [
-				{
-					field: 'name',
-					headerName: 'Company Name',
-					sortable: true
-				},
 				{
 					field: 'guid',
 					headerName: 'User Number',
-					sortable: true
-				},
-				{
-					field: 'sent_at',
-					headerName: 'First Link Sent',
-					sortable: true
-				},
-				{
-					field: 'opened_at',
-					headerName: 'First Link Opened',
-					sortable: true
-				},
-				{
-					field: 'latest_sent_at',
-					headerName: 'Latest Link Sent',
 					sortable: true,
-					sort: 'desc'
+					cellRenderer: (event) => {
+						return this.$root.shortGUID(event.data.guid)
+					},
 				},
 				{
-					field: 'latest_opened_at',
-					headerName: 'Latest Link Opened',
-					sortable: true
-				},
-				{
-					field: 'total_reports',
-					headerName: 'Total Reports',
-					sortable: true
-				},
-				{
-					field: '',
-					headerName: 'Ready for Review',
+					field: 'email',
+					headerName: 'Email',
 					sortable: true,
-					filter: true
+					cellRenderer: (event) => {
+						if (event.data.primary) {
+							return `${event.data.email} (Primary)`
+						} else {
+							return event.data.email;
+						}
+					},
 				},
+				{
+					field: 'pii_data.name',
+					headerName: 'Name',
+					sortable: true
+				},
+				{
+					field: 'created_at',
+					headerName: 'Created',
+					sortable: true,
+					sort: 'desc',
+					cellRenderer: (event) => {
+						return this.$root.dateTimeToDate(event.data.created_at)
+					},
+				}
 			],
 			quickFilterText:     "",
 			quickFilterCategory: "",
@@ -75,7 +67,7 @@ export default {
 	},
 
 	created() {
-		this.loadCompanies();
+		this.loadTeam();
 	},
 
 	mounted() {
@@ -86,12 +78,12 @@ export default {
 	},
 
 	methods: {
-		async loadCompanies() {
+		async loadTeam() {
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
 			const response = await api(
 				'GET',
-				'admin/get-companies',
+				'admin/get-team',
 				{
 					firm_guid: this.$parent.firm_guid
 				},
@@ -102,7 +94,7 @@ export default {
 
 			if (response.status == 200) {
 				console.log(response);
-				this.companies = response.detail;
+				this.team = response.detail;
 			} else {
 				this.$root.toast(
 					'',
@@ -118,7 +110,7 @@ export default {
 
 		downloadCsv() {
 			this.gridApi.exportDataAsCsv({
-				fileName: `companies-${this.$parent.firm_guid}-${moment().format('YYYY-MM-DD')}`
+				fileName: `team-${this.$parent.firm_guid}-${moment().format('YYYY-MM-DD')}`
 			});
 		},
 
@@ -148,13 +140,13 @@ export default {
 
 						<div class="table-header-right">
 							<span class="fs14 bold mr10">
-								Ready for Review:
+								Complete:
 							</span>
 							<span class="mr20">
 								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
 								<option value="">Display All</option>
-								<option value="ready">Ready</option>
-								<option value="notready">Not Ready</option>
+								<option value="complete">Complete</option>
+								<option value="incomplete">Incomplete</option>
 							</select>
 							</span>
 							<span>
@@ -169,7 +161,7 @@ export default {
 						:columnDefs="columnDefs"
 						@grid-ready="onGridReady"
 						:suppressExcelExport="true"
-						:rowData="companies"
+						:rowData="team"
 						:quickFilterText="quickFilterText"
 						:defaultColDef="defaultColDef"
 						pagination="true"

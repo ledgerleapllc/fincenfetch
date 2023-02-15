@@ -25,14 +25,14 @@ export default {
 					sortable: true
 				},
 				{
-					field: 'guid',
-					headerName: '#',
+					field: 'firm_guid',
+					headerName: 'Firm Number',
 					sortable: true,
 					cellRenderer: (event) => {
-						let guid = event.data.guid;
+						let firm_guid = event.data.firm_guid;
 
-						if (guid) {
-							return this.$root.shortGUID(guid);
+						if (firm_guid) {
+							return this.$root.shortGUID(firm_guid);
 						}
 					},
 				},
@@ -40,13 +40,19 @@ export default {
 					field: 'status',
 					headerName: 'Status',
 					filter: true,
-					sortable: true
+					sortable: true,
+					cellRenderer: (event) => {
+						return this.$root.ucfirst(event.data.status);
+					},
 				},
 				{
-					field: 'created_at',
-					headerName: 'Created',
+					field: 'associated_at',
+					headerName: 'Account Created',
 					sortable: true,
-					sort: 'desc'
+					sort: 'desc',
+					cellRenderer: (event) => {
+						return this.$root.dateTimeToDate(event.data.associated_at);
+					},
 				},
 				{
 					field: 'plan',
@@ -64,8 +70,8 @@ export default {
 					sortable: true
 				},
 				{
-					field: 'total_invoiced',
-					headerName: 'Total Invoiced',
+					field: 'total_paid',
+					headerName: 'Total Paid',
 					sortable: true
 				},
 				{
@@ -73,17 +79,17 @@ export default {
 					headerName: 'Action',
 					sortable: false,
 					cellRenderer: (event) => {
-						let guid = event.data.guid;
+						let firm_guid = event.data.firm_guid;
 
-						if (guid) {
+						if (firm_guid) {
 							return `<button class="btn btn-yellow btn-sm fs11">View Details</button>`;
 						}
 					},
 					onCellClicked: (event) => {
-						let guid = event.data.guid;
+						let firm_guid = event.data.firm_guid;
 
-						if (guid) {
-							this.$root.routeTo(`/a/firm/${guid}/reports`);
+						if (firm_guid) {
+							this.$root.routeTo(`/a/firm/${firm_guid}/reports`);
 						}
 					}
 				},

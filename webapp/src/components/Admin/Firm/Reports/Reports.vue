@@ -12,16 +12,24 @@ import "../../../ag-theme-custom.css";
 export default {
 	data() {
 		return {
-			loading:    false,
-			reports:    [],
-			columnDefs: [
+			loading:           false,
+			reports:           [],
+			reports_used:      0,
+			remaining_credits: 0,
+			columnDefs:        [
 				{
-					field: 'report_number',
-					headerName: '#',
+					field: 'report_guid',
+					headerName: 'Report Number',
 					sortable: true
 				},
 				{
-					field: 'name',
+					field: 'status',
+					headerName: 'Status',
+					sortable: true,
+					filter: true,
+				},
+				{
+					field: 'company_name',
 					headerName: 'Company Name',
 					sortable: true
 				},
@@ -32,30 +40,34 @@ export default {
 				},
 				{
 					field: 'sent_at',
-					headerName: 'Sent',
+					headerName: 'Link Sent',
 					sortable: true,
 					sort: 'desc'
 				},
 				{
 					field: 'opened_at',
-					headerName: 'Opened',
+					headerName: 'Started',
 					sortable: true
 				},
 				{
 					field: 'progress',
 					headerName: 'Progress',
-					sortable: true,
-					filter: true
+					sortable: true
+				},
+				{
+					field: 'reviewed_at',
+					headerName: 'Returned to Firm',
+					sortable: true
 				},
 				{
 					field: 'complete',
-					headerName: 'Mark Complete',
+					headerName: 'Review Complete',
 					sortable: true,
 					cellRenderer: (event) => {
 						let guid = event.data.guid;
 
 						if (guid) {
-							return `<button class="btn btn-yellow btn-sm fs13">Mark Complete</button>`;
+							return `<i class="fa fa-check"></i>`;
 						}
 					},
 					onCellClicked: (event) => {
@@ -113,12 +125,11 @@ export default {
 				console.log(response);
 				this.reports = response.detail;
 			} else {
-				this.$root.toast('','error','error');
-				// this.$root.routeTo('/a/firms');
-				let that = this;
-				setTimeout(function() {
-					that.reports = [];
-				},1000)
+				this.$root.toast(
+					'',
+					response.message,
+					'error'
+				);
 			}
 		},
 
@@ -150,6 +161,19 @@ export default {
 	<div class="container-fluid mt35">
 		<div class="row">
 			<div class="col-12">
+				<p class="bold">
+					Reports Used: 
+					<span class="fs14">
+						{{ reports_used }}
+					</span>
+					&ensp;
+					&ensp;
+					Remaining Credits: 
+					<span class="fs14">
+						{{ remaining_credits }}
+					</span>
+				</p>
+
 				<div class="table-card mt20">
 					<div class="table-header">
 						<span>

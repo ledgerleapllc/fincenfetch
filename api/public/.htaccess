@@ -57,6 +57,9 @@ RewriteRule ^admin/update-avatar/?$ /admin_api/update-avatar.php [NC]
 RewriteRule ^admin/invite-firm/?$ /admin_api/invite-firm.php [NC]
 RewriteRule ^admin/get-firms/?$ /admin_api/get-firms.php [NC]
 RewriteRule ^admin/get-firm/?$ /admin_api/get-firm.php [NC]
+RewriteRule ^admin/get-reports/?$ /admin_api/get-reports.php [NC]
+RewriteRule ^admin/get-companies/?$ /admin_api/get-companies.php [NC]
+RewriteRule ^admin/get-team/?$ /admin_api/get-team.php [NC]
 
 # PUBLIC API
 RewriteRule ^public/contact-us/?$ /public_api/contact-us.php [NC]

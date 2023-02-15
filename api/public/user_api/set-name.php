@@ -25,7 +25,7 @@ class UserSetName extends Endpoints {
 		$name  = parent::$params['name'] ?? '';
 		$phone = parent::$params['phone'] ?? '';
 
-		$already_set = $helper->get_user($guid);
+		$already_set = $helper->get_firm($guid);
 		$already_set = $already_set['pii_data']['name'] ?? false;
 
 		if ($already_set) {
@@ -62,9 +62,9 @@ class UserSetName extends Endpoints {
 		$enc_pii = $helper->encrypt_pii($pii_data);
 
 		$db->do_query("
-			UPDATE users
-			SET   pii_data = '$enc_pii'
-			WHERE guid     = '$guid'
+			UPDATE firms
+			SET   pii_data     = '$enc_pii'
+			WHERE primary_user = '$guid'
 		");
 
 		_exit(

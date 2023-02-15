@@ -19,7 +19,7 @@ export default {
 			iplog: [],
 			columnDefs: [
 				{
-					field: 'logged_in_at',
+					field: 'event_at',
 					headerName: 'Login Date/Time',
 					sortable: true,
 					sort: 'desc'

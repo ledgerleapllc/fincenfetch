@@ -49,7 +49,7 @@ export default {
 					hash: this.hash
 				}
 			);
-			console.log(response);
+
 			if (response.status == 200) {
 				this.email   = response.detail.email;
 				this.loading = false;

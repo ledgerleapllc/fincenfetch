@@ -18,7 +18,7 @@
  * @method array   get_firm_companies()
  * @method string  check_authorized_devices()
  * @method null    add_authorized_device()
- * @method null    log_login()
+ * @method null    log_action()
  * @method null    sanitize_input()
  * @method string  generate_guid()
  * @method bool    verify_guid()
@@ -450,13 +450,7 @@ class Helper {
 		}
 
 		if (!$pii_data) {
-			if ($user_array['role'] == 'firm') {
-				$pii_data = Structs::firm_info;
-			}
-
-			if ($user_array['role'] == 'company') {
-				$pii_data = Structs::company_info;
-			}
+			$pii_data = Structs::user_info;
 		}
 
 		$user_array['pii_data'] = $pii_data;
@@ -493,14 +487,6 @@ class Helper {
 		");
 		$notifications = $notifications ?? array();
 		$user_array['notifications'] = $notifications;
-
-		// user status
-		if (!$user_array['verified']) {
-			$user_array['status'] = 'Invited';
-		} else {
-			//// get real status from subscriptions table
-			$user_array['status'] = 'Trial';
-		}
 
 		return $user_array;
 	}
@@ -546,13 +532,7 @@ class Helper {
 		}
 
 		if (!$pii_data) {
-			if ($user_array['role'] == 'firm') {
-				$pii_data = Structs::firm_info;
-			}
-
-			if ($user_array['role'] == 'company') {
-				$pii_data = Structs::company_info;
-			}
+			$pii_data = Structs::user_info;
 		}
 
 		$user_array['pii_data'] = $pii_data;
@@ -566,6 +546,39 @@ class Helper {
 		}
 
 		return $user_array;
+	}
+
+	/**
+	 *
+	 * Decrypts and returns firm PII array by firm guid
+	 *
+	 * @param  string  $guid
+	 * @return array   $firm
+	 *
+	 */
+	public static function get_firm(string $guid) {
+		global $db;
+
+		if (!$guid) {
+			return array();
+		}
+
+		$firm = $db->do_select("
+			SELECT *
+			FROM firms
+			WHERE firm_guid = '$guid'
+		")[0] ?? array();
+
+		$pii_data = $firm['pii_data'] ?? '';
+		$pii_data = self::decrypt_pii($pii_data);
+
+		if (!$pii_data) {
+			$pii_data = Structs::firm_info;
+		}
+
+		$firm['pii_data'] = $pii_data;
+
+		return $firm;
 	}
 
 	/**
@@ -623,6 +636,44 @@ class Helper {
 		}
 
 		return $company_array;
+	}
+
+	/**
+	 *
+	 * Decrypts and returns company PII array by company guid
+	 *
+	 * @param  string  $guid
+	 * @return array   $company
+	 *
+	 */
+	public static function get_company(string $guid) {
+		global $db;
+
+		if (!$guid) {
+			return array();
+		}
+
+		$company = $db->do_select("
+			SELECT 
+			guid,
+			email,
+			pii_data,
+			created_at
+			FROM  users
+			WHERE role = 'company'
+			AND   guid = '$guid'
+		")[0] ?? array();
+
+		$pii_data = $company['pii_data'] ?? '';
+		$pii_data = self::decrypt_pii($pii_data);
+
+		if (!$pii_data) {
+			$pii_data = Structs::user_info;
+		}
+
+		$company['pii_data'] = $pii_data;
+
+		return $company;
 	}
 
 	/**
@@ -750,7 +801,7 @@ class Helper {
 
 	/**
 	 *
-	 * Logs login attempts for security auditing
+	 * Logs login attempts and other actions for security auditing
 	 *
 	 * @param  string   $guid
 	 * @param  string   $email
@@ -761,7 +812,7 @@ class Helper {
 	 * @return null
 	 *
 	 */
-	public static function log_login(
+	public static function log_action(
 		string   $guid,
 		string   $email,
 		int|bool $successful,
@@ -771,16 +822,16 @@ class Helper {
 	) {
 		global $db;
 
-		$logged_in_at = self::get_datetime();
-		$successful   = (bool)$successful;
-		$successful   = (int)$successful;
-		$source       = strtolower($_SERVER['HTTP_ORIGIN'] ?? '');
+		$event_at   = self::get_datetime();
+		$successful = (bool)$successful;
+		$successful = (int)$successful;
+		$source     = strtolower($_SERVER['HTTP_ORIGIN'] ?? '');
 
 		$query = "
-			INSERT INTO login_attempts (
+			INSERT INTO action_log (
 				guid,
 				email,
-				logged_in_at,
+				event_at,
 				successful,
 				detail,
 				ip,
@@ -789,7 +840,7 @@ class Helper {
 			) VALUES (
 				'$guid',
 				'$email',
-				'$logged_in_at',
+				'$event_at',
 				$successful,
 				'$detail',
 				'$ip',
@@ -947,9 +998,9 @@ class Helper {
 	 *
 	 */
 	public static function generate_guid(
-		string $role = 'firm'
+		string $role = 'user'
 	) {
-		$prepend = 'F-';
+		$prepend = 'U-';
 
 		if ($role == 'admin') {
 			$prepend = 'A-';
@@ -961,6 +1012,14 @@ class Helper {
 
 		if ($role == 'report') {
 			$prepend = 'R-';
+		}
+
+		if ($role == 'user') {
+			$prepend = 'U-';
+		}
+
+		if ($role == 'firm') {
+			$prepend = 'F-';
 		}
 
 		return (

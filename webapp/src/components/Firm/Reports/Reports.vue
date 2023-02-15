@@ -83,7 +83,6 @@ export default {
 			new_or_existing:   'new',
 
 			new_company_name:  '',
-			new_company_phone: '',
 			new_company_email: '',
 
 			companies:        [],
@@ -223,7 +222,6 @@ export default {
 
 		async newCompanyAndReport() {
 			console.log(this.new_company_name);
-			console.log(this.new_company_phone);
 			console.log(this.new_company_email);
 			this.loading = true;
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
@@ -233,8 +231,7 @@ export default {
 				'user/create-report',
 				{
 					company_name:  this.new_company_name,
-					company_email: this.new_company_email,
-					company_phone: this.new_company_phone
+					company_email: this.new_company_email
 				},
 				fetch_bearer_token
 			);
@@ -290,8 +287,7 @@ export default {
 				{
 					company_guid:  this.selected_company.guid,
 					company_name:  this.selected_company.pii_data.name,
-					company_email: this.selected_company.email,
-					company_phone: this.selected_company.pii_data.phone
+					company_email: this.selected_company.email
 				},
 				fetch_bearer_token
 			);
@@ -328,7 +324,7 @@ export default {
 			<div class="col-12">
 				<button class="btn btn-yellow width-200" @click="new_report_modal = true">
 					<i class="fa fa-plus"></i>
-					New Report
+					Send New BOI Link
 				</button>
 
 				<div class="table-card mt20">
@@ -440,11 +436,6 @@ export default {
 				</p>
 				<input type="email" class="form-control fincen-input mt5" v-model="new_company_email">
 
-				<p class="bold mt20">
-					Contact Phone Number
-				</p>
-				<input type="tel" class="form-control fincen-input mt5" v-model="new_company_phone" :onkeydown="this.$root.inputPhoneFormat">
-
 				<button class="btn btn-success form-control btn-inline ml0 mt40" @click="newCompanyAndReport">
 					Send Link to Collect BOI
 				</button>
@@ -478,15 +469,6 @@ export default {
 					type="email" 
 					class="form-control fincen-input mt5" 
 					v-model="selected_company.email"
-				>
-
-				<p class="bold mt20">
-					Confirm Company Phone
-				</p>
-				<input 
-					type="tel" 
-					class="form-control fincen-input mt5" 
-					v-model="selected_company.pii_data.phone"
 				>
 
 				<button class="btn btn-success form-control btn-inline ml0 mt40" @click="newReport">

@@ -8,14 +8,12 @@ include_once('../../core.php');
  *
  * @api
  * @param string $company_name
- * @param string $company_phone
  * @param string $company_email
  *
  */
 class UserInviteCompany extends Endpoints {
 	function __construct(
 		$company_name  = '',
-		$company_phone = '',
 		$company_email = ''
 	) {
 		global $db, $helper;
@@ -27,7 +25,6 @@ class UserInviteCompany extends Endpoints {
 
 		$firm_guid     = $auth['guid'] ?? '';
 		$company_name  = parent::$params['company_name'] ?? '';
-		$company_phone = parent::$params['company_phone'] ?? 0;
 		$company_email = parent::$params['company_email'] ?? 0;
 
 		if (!filter_var($company_email, FILTER_VALIDATE_EMAIL)) {
@@ -64,20 +61,6 @@ class UserInviteCompany extends Endpoints {
 			'Company name'
 		);
 
-		$helper->sanitize_input(
-			$company_phone,
-			true,
-			Regex::$phone['char_limit'] - 8,
-			Regex::$phone['char_limit'],
-			Regex::$phone['pattern'],
-			'Phone number'
-		);
-
-		$company_phone = str_replace('-', '', $company_phone);
-		$company_phone = str_replace('(', '', $company_phone);
-		$company_phone = str_replace(')', '', $company_phone);
-		$company_phone = str_replace('+', '', $company_phone);
-		$company_phone = str_replace(' ', '', $company_phone);
 		$company_guid  = $helper->generate_guid('company');
 		$created_at    = $helper->get_datetime();
 		$code          = $helper->generate_hash();
@@ -93,7 +76,6 @@ class UserInviteCompany extends Endpoints {
 
 		$company_pii          = Structs::company_info;
 		$company_pii['name']  = $company_name;
-		$company_pii['phone'] = $company_phone;
 		$enc_pii              = $helper->encrypt_pii($company_pii);
 		dlog($company_pii);
 
@@ -133,7 +115,7 @@ class UserInviteCompany extends Endpoints {
 			)
 		");
 
-		// also create report record, and company->report relationship record
+		//// also create report record, and company->report relationship record
 
 		$helper->schedule_email(
 			'user-alert',

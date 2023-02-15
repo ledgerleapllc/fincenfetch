@@ -205,11 +205,7 @@ export default {
 					if (
 						!this.verified     || 
 						this.verified == 0 ||
-						!this.password     ||
-						(
-							!this.pii.name &&
-							this.role != 'admin'
-						)
+						!this.password
 					) {
 						this.routeTo('/confirm-account');
 						return;
@@ -219,12 +215,18 @@ export default {
 				let path_split = window.location.pathname.split('/');
 				let path0 = path_split[1] ?? '';
 
-				if (this.in_common_zone()) {
-					this.routeTo(`/${pre_route}/reports`);
-				}
-
-				if (pre_route != path0) {
-					this.routeTo(`/${pre_route}/reports`);
+				if (
+					this.in_common_zone() ||
+					pre_route != path0
+				) {
+					if (
+						this.role == 'admin' ||
+						this.role == 'sub-admin'
+					) {
+						this.routeTo(`/${pre_route}/firms`);
+					} else {
+						this.routeTo(`/${pre_route}/reports`);
+					}
 				}
 
 				// notifications banner

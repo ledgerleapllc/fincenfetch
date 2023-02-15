@@ -13,49 +13,12 @@ export default {
 	data() {
 		return {
 			loading:    false,
-			companies:  [],
+			settings:   [],
 			columnDefs: [
 				{
 					field: 'name',
-					headerName: 'Company Name',
+					headerName: 'Setting',
 					sortable: true
-				},
-				{
-					field: 'guid',
-					headerName: 'User Number',
-					sortable: true
-				},
-				{
-					field: 'sent_at',
-					headerName: 'First Link Sent',
-					sortable: true
-				},
-				{
-					field: 'opened_at',
-					headerName: 'First Link Opened',
-					sortable: true
-				},
-				{
-					field: 'latest_sent_at',
-					headerName: 'Latest Link Sent',
-					sortable: true,
-					sort: 'desc'
-				},
-				{
-					field: 'latest_opened_at',
-					headerName: 'Latest Link Opened',
-					sortable: true
-				},
-				{
-					field: 'total_reports',
-					headerName: 'Total Reports',
-					sortable: true
-				},
-				{
-					field: '',
-					headerName: 'Ready for Review',
-					sortable: true,
-					filter: true
 				},
 			],
 			quickFilterText:     "",
@@ -75,7 +38,7 @@ export default {
 	},
 
 	created() {
-		this.loadCompanies();
+		this.loadSettings();
 	},
 
 	mounted() {
@@ -86,12 +49,12 @@ export default {
 	},
 
 	methods: {
-		async loadCompanies() {
+		async loadSettings() {
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
 			const response = await api(
 				'GET',
-				'admin/get-companies',
+				'admin/get-settings',
 				{
 					firm_guid: this.$parent.firm_guid
 				},
@@ -102,7 +65,7 @@ export default {
 
 			if (response.status == 200) {
 				console.log(response);
-				this.companies = response.detail;
+				this.settings = response.detail;
 			} else {
 				this.$root.toast(
 					'',
@@ -118,7 +81,7 @@ export default {
 
 		downloadCsv() {
 			this.gridApi.exportDataAsCsv({
-				fileName: `companies-${this.$parent.firm_guid}-${moment().format('YYYY-MM-DD')}`
+				fileName: `settings-${this.$parent.firm_guid}-${moment().format('YYYY-MM-DD')}`
 			});
 		},
 
@@ -145,22 +108,6 @@ export default {
 						<span>
 							<input v-model="quickFilterText" type="text" class="form-control form-control-sm width-200" placeholder="Search">
 						</span>
-
-						<div class="table-header-right">
-							<span class="fs14 bold mr10">
-								Ready for Review:
-							</span>
-							<span class="mr20">
-								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
-								<option value="">Display All</option>
-								<option value="ready">Ready</option>
-								<option value="notready">Not Ready</option>
-							</select>
-							</span>
-							<span>
-								<i class="fa fa-download text-blue pointer fs28 mt5" v-on:click="downloadCsv()"></i>
-							</span>
-						</div>
 					</div>
 
 					<ag-grid-vue
@@ -169,7 +116,7 @@ export default {
 						:columnDefs="columnDefs"
 						@grid-ready="onGridReady"
 						:suppressExcelExport="true"
-						:rowData="companies"
+						:rowData="settings"
 						:quickFilterText="quickFilterText"
 						:defaultColDef="defaultColDef"
 						pagination="true"

@@ -1,49 +1,56 @@
 <script>
 
-import { api } from '../../../api.js';
+import App from '../../../App.vue';
+import { api } from '../../api.js';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import moment from 'moment';
+import { Modal } from 'vue-neat-modal';
 import { AgGridVue } from "ag-grid-vue3";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "../../../ag-theme-custom.css";
+import "../../ag-theme-custom.css";
+
+import 'vue-neat-modal/dist/vue-neat-modal.css';
 
 export default {
 	data() {
 		return {
 			loading:    false,
-			companies:  [],
+			companies:      [],
 			columnDefs: [
 				{
 					field: 'name',
-					headerName: 'Company Name',
+					headerName: 'Firm Name',
 					sortable: true
 				},
 				{
 					field: 'guid',
 					headerName: 'User Number',
+					sortable: true,
+					cellRenderer: (event) => {
+						let guid = event.data.guid;
+
+						if (guid) {
+							return this.$root.shortGUID(guid);
+						}
+					},
+				},
+				{
+					field: 'status',
+					headerName: 'Status',
+					filter: true,
 					sortable: true
 				},
 				{
-					field: 'sent_at',
-					headerName: 'First Link Sent',
-					sortable: true
-				},
-				{
-					field: 'opened_at',
-					headerName: 'First Link Opened',
-					sortable: true
-				},
-				{
-					field: 'latest_sent_at',
-					headerName: 'Latest Link Sent',
+					field: 'created_at',
+					headerName: 'Sign Up',
 					sortable: true,
 					sort: 'desc'
 				},
 				{
-					field: 'latest_opened_at',
-					headerName: 'Latest Link Opened',
+					field: 'plan',
+					headerName: 'Current Plan',
 					sortable: true
 				},
 				{
@@ -52,10 +59,33 @@ export default {
 					sortable: true
 				},
 				{
+					field: 'total_companies',
+					headerName: 'Total Companies',
+					sortable: true
+				},
+				{
+					field: 'total_paid',
+					headerName: 'Total Paid',
+					sortable: true
+				},
+				{
 					field: '',
-					headerName: 'Ready for Review',
-					sortable: true,
-					filter: true
+					headerName: 'Action',
+					sortable: false,
+					cellRenderer: (event) => {
+						let guid = event.data.guid;
+
+						if (guid) {
+							return `<button class="btn btn-yellow btn-sm fs11">View Details</button>`;
+						}
+					},
+					onCellClicked: (event) => {
+						let guid = event.data.guid;
+
+						if (guid) {
+							this.$root.routeTo(`/a/firm/${guid}/reports`);
+						}
+					}
 				},
 			],
 			quickFilterText:     "",
@@ -65,17 +95,22 @@ export default {
 				flex:      1,
 				minWidth:  100,
 				resizable: true,
-			}
+			},
+			new_firm_modal: false,
+			new_firm_name:  '',
+			new_firm_phone: '',
+			new_firm_email: ''
 		}
 	},
 
 	components: {
 		ClipLoader,
-		AgGridVue
+		AgGridVue,
+		Modal
 	},
 
 	created() {
-		this.loadCompanies();
+		this.getCompanies();
 	},
 
 	mounted() {
@@ -83,42 +118,17 @@ export default {
 	},
 
 	watch: {
+		quickFilterCategory: "quickFilterCategorySelect"
 	},
 
 	methods: {
-		async loadCompanies() {
-			let fetch_bearer_token = this.$cookies.get('bearer_token');
-
-			const response = await api(
-				'GET',
-				'admin/get-companies',
-				{
-					firm_guid: this.$parent.firm_guid
-				},
-				fetch_bearer_token
-			);
-
-			this.$root.catch401(response);
-
-			if (response.status == 200) {
-				console.log(response);
-				this.companies = response.detail;
-			} else {
-				this.$root.toast(
-					'',
-					response.message,
-					'error'
-				);
-			}
-		},
-
 		onGridReady(params) {
 			this.gridApi = params.api;
 		},
 
 		downloadCsv() {
 			this.gridApi.exportDataAsCsv({
-				fileName: `companies-${this.$parent.firm_guid}-${moment().format('YYYY-MM-DD')}`
+				fileName: `companies-${moment().format('YYYY-MM-DD')}`
 			});
 		},
 
@@ -131,6 +141,31 @@ export default {
 				}
 			});
 		},
+
+		async getCompanies() {
+			let fetch_bearer_token = this.$cookies.get('bearer_token');
+
+			const response = await api(
+				'GET',
+				'admin/get-companies',
+				{},
+				fetch_bearer_token
+			);
+
+			this.$root.catch401(response);
+
+			if (response.status == 200) {
+				// console.log(response);
+				this.companies = response.detail;
+			} else {
+				this.loading = false;
+				this.$root.toast(
+					'',
+					response.message,
+					'error'
+				);
+			}
+		}
 	}
 };
 
@@ -145,22 +180,6 @@ export default {
 						<span>
 							<input v-model="quickFilterText" type="text" class="form-control form-control-sm width-200" placeholder="Search">
 						</span>
-
-						<div class="table-header-right">
-							<span class="fs14 bold mr10">
-								Ready for Review:
-							</span>
-							<span class="mr20">
-								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
-								<option value="">Display All</option>
-								<option value="ready">Ready</option>
-								<option value="notready">Not Ready</option>
-							</select>
-							</span>
-							<span>
-								<i class="fa fa-download text-blue pointer fs28 mt5" v-on:click="downloadCsv()"></i>
-							</span>
-						</div>
 					</div>
 
 					<ag-grid-vue
@@ -179,10 +198,9 @@ export default {
 			</div>
 		</div>
 	</div>
+
 </template>
 
 <style scoped>
-
-
 
 </style>

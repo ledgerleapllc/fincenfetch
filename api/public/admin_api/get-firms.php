@@ -1,3 +1,4 @@
+
 <?php
 include_once('../../core.php');
 /**
@@ -20,36 +21,37 @@ class AdminGetFirms extends Endpoints {
 
 		$firms = $db->do_select("
 			SELECT 
-			guid,
-			role,
-			email,
+			firm_guid,
+			primary_user,
+			status,
 			pii_data,
-			verified,
-			created_at
-			FROM users
-			WHERE role = 'firm'
+			associated_at
+			FROM firms
 		") ?? array();
 
 		foreach ($firms as &$firm) {
-			$enc_pii  = $firm['pii_data'] ?? '';
-			$pii      = $helper->decrypt_pii($enc_pii);
-
+			$firm_guid    = $firm['firm_guid'] ?? '';
+			$enc_pii      = $firm['pii_data'] ?? '';
+			$pii          = $helper->decrypt_pii($enc_pii);
 			$firm['name'] = $pii['name'] ?? '';
 
-			$verified = (int)($firm['verified'] ?? 0);
+			$total_reports = $db->do_select("
+				SELECT count(report_guid) AS rCount
+				FROM  reports
+				WHERE firm_guid = '$firm_guid'
+			");
 
-			if (!$verified) {
-				$firm['status'] = 'Invited';
-			} else {
-				$firm['status'] = 'Trial';
-				$firm['plan']   = 'Trial';
-			}
+			$firm['total_reports'] = (int)($total_reports[0]['rCount'] ?? 0);
 
-			$firm['total_reports'] = 0;
+			$total_companies = $db->do_select("
+				SELECT count(company_guid) AS cCount
+				FROM  firm_company_relations
+				WHERE firm_guid = '$firm_guid'
+			");
 
-			$firm['total_companies'] = 0;
+			$firm['total_companies'] = (int)($total_companies[0]['cCount'] ?? 0);
 
-			$firm['total_invoiced'] = 0;
+			$firm['total_paid'] = 0;
 		}
 
 		_exit(

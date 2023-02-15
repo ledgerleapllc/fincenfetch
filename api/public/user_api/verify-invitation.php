@@ -36,7 +36,7 @@ class UserVerifyInvitation extends Endpoints {
 			AND   verified          = 0
 		");
 
-		if(!$check) {
+		if (!$check) {
 			_exit(
 				'error',
 				'Invitation code is invalid',
@@ -50,7 +50,7 @@ class UserVerifyInvitation extends Endpoints {
 		// 1 month for registering
 		$expire_time = 2592000;
 
-		if($time < (int)time() - $expire_time) {
+		if ($time < (int)time() - $expire_time) {
 			_exit(
 				'error',
 				'Invitation code is expired. Please try registering again',
@@ -59,6 +59,7 @@ class UserVerifyInvitation extends Endpoints {
 			);
 		}
 
+		// for company flow
 		$law_firm_name = '';
 
 		$firm_guid = $db->do_select("

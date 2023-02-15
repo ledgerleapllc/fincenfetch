@@ -37,6 +37,7 @@ class UserAcceptInvitation extends Endpoints {
 			FROM  users
 			WHERE confirmation_code = '$code'
 			AND   guid              = '$guid'
+			AND   verified          = 0
 		");
 
 		if (!$check) {
@@ -78,7 +79,7 @@ class UserAcceptInvitation extends Endpoints {
 
 		$already_set = $db->do_select("
 			SELECT password
-			FROM users
+			FROM  users
 			WHERE guid = '$guid'
 		");
 
@@ -118,7 +119,7 @@ class UserAcceptInvitation extends Endpoints {
 		);
 
 		/* log login */
-		$helper->log_login(
+		$helper->log_action(
 			$guid,
 			$email,
 			1,

@@ -5,6 +5,10 @@ import { api } from '../../api.js';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import Reports from './Reports/Reports.vue';
 import Companies from './Companies/Companies.vue';
+import Billing from './Billing/Billing.vue';
+import Settings from './Settings/Settings.vue';
+import ActivityLog from './ActivityLog/ActivityLog.vue';
+import Team from './Team/Team.vue';
 
 export default {
 	data() {
@@ -15,7 +19,7 @@ export default {
 			selected_firm: {
 				email:           null,
 				status:          null,
-				created_at:      null,
+				associated_at:   null,
 				companies:       [],
 				pii_data: {
 					name:        null,
@@ -28,7 +32,11 @@ export default {
 	components: {
 		ClipLoader,
 		Reports,
-		Companies
+		Companies,
+		Billing,
+		Settings,
+		ActivityLog,
+		Team
 	},
 
 	created() {
@@ -51,7 +59,7 @@ export default {
 			this.uri_category != 'companies' &&
 			this.uri_category != 'billing' &&
 			this.uri_category != 'team' &&
-			this.uri_category != 'history' &&
+			this.uri_category != 'activity-log' &&
 			this.uri_category != 'settings'
 		) {
 			this.uri_category = 'reports';
@@ -126,17 +134,17 @@ export default {
 			</div>
 			<div 
 				class="sub-view-menu-item"
-				:class="uri_category == 'history' ? 'sub-view-menu-item-active' : ''"
-				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/history')"
+				:class="uri_category == 'activity-log' ? 'sub-view-menu-item-active' : ''"
+				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/activity-log')"
 			>
-				History
+				Activity Log
 			</div>
 			<div 
 				class="sub-view-menu-item"
 				:class="uri_category == 'settings' ? 'sub-view-menu-item-active' : ''"
 				@click="this.$root.routeTo('/a/firm/'+firm_guid+'/settings')"
 			>
-				Settings
+				Info & Settings
 			</div>
 		</div>
 		<div class="sub-view-right">
@@ -144,13 +152,13 @@ export default {
 				<p class="bold float-right fs14">
 					Account Created:&ensp;
 					<ClipLoader 
-						v-if="selected_firm.created_at === null" 
+						v-if="selected_firm.associated_at === null" 
 						size="12px" 
 						:color="this.$root.color_primary"
 						class="inline"
 					></ClipLoader>
 					<span v-else class="text-blue">
-						{{ this.$root.dateTimeToDate(selected_firm.created_at) }}
+						{{ this.$root.dateTimeToDate(selected_firm.associated_at) }}
 					</span>
 				</p>
 
@@ -163,7 +171,7 @@ export default {
 				<p v-else class="bold fs20">
 					{{ selected_firm.pii_data.name }}
 					<span class="bold fs14">
-						- User ID: 
+						- Firm ID: 
 						<span class="text-blue">
 							{{ firm_guid }}
 						</span>
@@ -225,6 +233,10 @@ export default {
 
 			<Reports v-if="uri_category == 'reports'"></Reports>
 			<Companies v-if="uri_category == 'companies'"></Companies>
+			<Billing v-if="uri_category == 'billing'"></Billing>
+			<Team v-if="uri_category == 'team'"></Team>
+			<ActivityLog v-if="uri_category == 'activity-log'"></ActivityLog>
+			<Settings v-if="uri_category == 'settings'"></Settings>
 		</div>
 	</div>
 </template>

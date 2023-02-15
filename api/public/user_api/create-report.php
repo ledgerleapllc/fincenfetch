@@ -10,16 +10,13 @@ include_once('../../core.php');
  * @param string $company_guid
  * @param string $company_name
  * @param string $company_email
- * @param string $company_phone
  *
  */
 class UserCreateReport extends Endpoints {
 	function __construct(
 		$company_guid   = '',
 		$company_name   = '',
-		$company_email  = '',
-		$company_phone  = '',
-		$report_updated = 0
+		$company_email  = ''
 	) {
 		global $db, $helper;
 
@@ -33,8 +30,6 @@ class UserCreateReport extends Endpoints {
 		$company_guid   = parent::$params['company_guid'] ?? '';
 		$company_name   = parent::$params['company_name'] ?? '';
 		$company_email  = parent::$params['company_email'] ?? '';
-		$company_phone  = parent::$params['company_phone'] ?? '';
-		$report_updated = (int)(parent::$params['report_updated'] ?? 0);
 
 		$email_sent     = false;
 		$filing_year    = $helper->get_filing_year();
@@ -67,9 +62,8 @@ class UserCreateReport extends Endpoints {
 				);
 			}
 
-			// check for email/phone update
+			// check for email update
 			$selected_email = $selected_company['email'] ?? '';
-			$selected_phone = $selected_company['pii_data']['phone'] ?? '';
 
 			$company = $db->do_select("
 				SELECT *
@@ -120,39 +114,6 @@ class UserCreateReport extends Endpoints {
 					WHERE guid  = '$company_guid'
 				");
 			}
-
-			if (
-				$company_phone != $selected_phone &&
-				$company_phone != ''
-			) {
-				$helper->sanitize_input(
-					$company_phone,
-					true,
-					10,
-					Regex::$phone['char_limit'],
-					Regex::$phone['pattern'],
-					'Company Phone'
-				);
-
-				$company_phone = str_replace('-', '', $company_phone);
-				$company_phone = str_replace('(', '', $company_phone);
-				$company_phone = str_replace(')', '', $company_phone);
-				$company_phone = str_replace('+', '', $company_phone);
-				$company_phone = str_replace(' ', '', $company_phone);
-
-				$pii = $helper->decrypt_pii($company['pii_data'] ?? '');
-				$pii = $pii ?? Structs::company_info;
-
-				$pii['phone'] = $company_phone;
-				$pii_enc      = $helper->encryt_pii($pii);
-
-				// update
-				$db->do_query("
-					UPDATE users
-					SET   pii_data = '$pii_enc'
-					WHERE guid     = '$company_guid'
-				");
-			}
 		}
 
 		// new company
@@ -197,26 +158,9 @@ class UserCreateReport extends Endpoints {
 				);
 			}
 
-			// check phone
-			$helper->sanitize_input(
-				$company_phone,
-				true,
-				10,
-				Regex::$phone['char_limit'],
-				Regex::$phone['pattern'],
-				'Company Phone'
-			);
-
-			$company_phone = str_replace('-', '', $company_phone);
-			$company_phone = str_replace('(', '', $company_phone);
-			$company_phone = str_replace(')', '', $company_phone);
-			$company_phone = str_replace('+', '', $company_phone);
-			$company_phone = str_replace(' ', '', $company_phone);
-
 			// handle pii
 			$pii_data          = Structs::company_info;
 			$pii_data['name']  = $company_name;
-			$pii_data['phone'] = $company_phone;
 			$pii_enc           = $helper->encrypt_pii($pii_data);
 			$confirmation_code = $helper->generate_hash();
 			$company_guid      = $helper->generate_guid('company');
@@ -298,7 +242,7 @@ class UserCreateReport extends Endpoints {
 				$company_email,
 				'File your Report with FincenFetch!',
 				'You have received a Beneficial Owners Report link from your firm. Follow the link to your dashboard to get started.',
-				FRONTEND_URL.'/login?start='.$report_guid
+				PROTOCOL.'://'.FRONTEND_URL.'/login?start='.$report_guid
 			);
 		}
 
@@ -314,10 +258,6 @@ class UserCreateReport extends Endpoints {
 
 			// find report_type
 			$report_type = 'initial';
-
-			if ($report_updated) {
-				$report_type = 'updated';
-			}
 
 			if ($initial_report) {
 				$report_type = 'updated';
@@ -354,7 +294,7 @@ class UserCreateReport extends Endpoints {
 				$company_email,
 				'File your Report with FincenFetch!',
 				'You have received a Beneficial Owners Report link from your firm. Follow the link to your dashboard to get started.',
-				FRONTEND_URL.'/login?start='.$report_guid
+				PROTOCOL.'://'.FRONTEND_URL.'/login?start='.$report_guid
 			);
 		}
 

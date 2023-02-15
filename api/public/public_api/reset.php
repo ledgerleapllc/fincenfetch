@@ -42,7 +42,7 @@ class ResetDatabase {
 			");
 
 			$db->do_query("
-				DELETE FROM login_attempts
+				DELETE FROM action_log
 				WHERE guid = '$guid'
 			");
 

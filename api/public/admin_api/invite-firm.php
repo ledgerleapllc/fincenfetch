@@ -78,22 +78,46 @@ class AdminInviteFirm extends Endpoints {
 		$firm_phone = str_replace('+', '', $firm_phone);
 		$firm_phone = str_replace(' ', '', $firm_phone);
 		$firm_guid  = $helper->generate_guid('firm');
+		$user_guid  = $helper->generate_guid('user');
 		$created_at = $helper->get_datetime();
 		$code       = $helper->generate_hash();
 
 		$hash       = $helper->aes_encrypt(
-			$firm_guid.'::'.
+			$user_guid.'::'.
 			$code.'::'.
 			(string)time()
 		);
 
 		$link = PROTOCOL.'://'.FRONTEND_URL.'/f/accept-invitation/'.$hash;
 
+		// firm pii
 		$firm_pii          = Structs::firm_info;
 		$firm_pii['name']  = $firm_name;
 		$firm_pii['phone'] = $firm_phone;
-		$enc_pii           = $helper->encrypt_pii($firm_pii);
+		$firm_pii          = $helper->encrypt_pii($firm_pii);
 
+		// user pii
+		$user_pii          = Structs::user_info;
+		$user_pii          = $helper->encrypt_pii($user_pii);
+
+		// create firm
+		$db->do_query("
+			INSERT INTO firms (
+				firm_guid,
+				primary_user,
+				associated_at,
+				status,
+				pii_data
+			) VALUES (
+				'$firm_guid',
+				'$user_guid',
+				'$created_at',
+				'trial',
+				'$firm_pii'
+			)
+		");
+
+		// create user
 		$db->do_query("
 			INSERT INTO users (
 				guid,
@@ -105,14 +129,27 @@ class AdminInviteFirm extends Endpoints {
 				created_at,
 				confirmation_code
 			) VALUES (
-				'$firm_guid',
+				'$user_guid',
 				'firm',
 				'$firm_email',
-				'$enc_pii',
+				'$user_pii',
 				'0',
 				'',
 				'$created_at',
 				'$code'
+			)
+		");
+
+		// create user->firm relationship
+		$db->do_query("
+			INSERT INTO user_firm_relations (
+				user_guid,
+				firm_guid,
+				associated_at
+			) VALUES (
+				'$user_guid',
+				'$firm_guid',
+				'$created_at'
 			)
 		");
 

@@ -135,7 +135,7 @@ class AdminLoginMfa extends Endpoints {
 			$user_agent = filter($_SERVER['HTTP_USER_AGENT'] ?? '');
 
 			// log login
-			$helper->log_login(
+			$helper->log_action(
 				$guid,
 				$email,
 				1,

@@ -16,7 +16,7 @@ import 'vue-neat-modal/dist/vue-neat-modal.css';
 export default {
 	data() {
 		return {
-			report_guid: this.$route.param.report_guid,
+			report_guid: this.$route.params.report_guid,
 			report:      {
 				report_guid:  '',
 				company_guid: '',
@@ -94,7 +94,9 @@ export default {
 			const response = await api(
 				'GET',
 				'user/get-report',
-				{},
+				{
+					report_guid: this.report_guid
+				},
 				fetch_bearer_token
 			);
 

@@ -361,9 +361,11 @@ class DB {
 						'admin',
 						"$admin_email",
 						'',
-						1,
-						"$admin_password_hash",
 						'2022-01-01 14:30:00',
+						1,
+						'2022-01-01 14:30:00',
+						NULL,
+						"$admin_password_hash",
 						'ABC123',
 						0,
 						0,
@@ -371,6 +373,48 @@ class DB {
 						''
 					)
 				)
+			),
+			"firms"               => array(
+				"fields"          => array(
+					"firm_guid"   => array(
+						"type"    => "varchar(38)",
+						"default" => "NOT NULL"
+					),
+					"primary_user"=> array(
+						"type"    => "varchar(38)",
+						"default" => "NOT NULL"
+					),
+					"associated_at"=> array(
+						"type"    => "timestamp",
+						"default" => "NULL DEFAULT NULL"
+					),
+					"status"      => array(
+						"type"    => "enum('invited', 'trial', 'active', 'cancelled')",
+						"default" => "DEFAULT 'invited'"
+					),
+					"pii_data"    => array(
+						"type"    => "MEDIUMTEXT",
+						"default" => "NOT NULL"
+					)
+				),
+				"insert_records"  => array()
+			),
+			"user_firm_relations" => array(
+				"fields"          => array(
+					"user_guid"   => array(
+						"type"    => "varchar(38)",
+						"default" => "NOT NULL"
+					),
+					"firm_guid"   => array(
+						"type"    => "varchar(38)",
+						"default" => "NOT NULL"
+					),
+					"associated_at"=> array(
+						"type"    => "timestamp",
+						"default" => "NULL DEFAULT NULL"
+					)
+				),
+				"insert_records"  => array()
 			),
 			"firm_company_relations" => array(
 				"fields"          => array(
@@ -525,7 +569,7 @@ class DB {
 				),
 				"insert_records"  => array()
 			),
-			"login_attempts"      => array(
+			"action_log"          => array(
 				"fields"          => array(
 					"guid"        => array(
 						"type"    => "varchar(38)",
@@ -535,7 +579,7 @@ class DB {
 						"type"    => "varchar(255)",
 						"default" => "DEFAULT NULL"
 					),
-					"logged_in_at" => array(
+					"action_at"   => array(
 						"type"    => "timestamp",
 						"default" => "NULL DEFAULT NULL"
 					),

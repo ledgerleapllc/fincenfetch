@@ -10,9 +10,10 @@ export default {
 <template>
 	<div
 		v-if="
-			this.$root.verified &&
-			this.$root.password &&
-			this.$root.pii.name
+			(
+				this.$root.verified &&
+				this.$root.password
+			)
 		"
 	>
 		<div

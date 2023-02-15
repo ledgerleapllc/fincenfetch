@@ -73,7 +73,7 @@ class UserLogin extends Endpoints {
 				$failed_reason = 'Email does not exist';
 			}
 
-			$helper->log_login(
+			$helper->log_action(
 				$guid,
 				$email,
 				0,
@@ -108,7 +108,7 @@ class UserLogin extends Endpoints {
 				$db->do_query($query);
 
 				// log login
-				$helper->log_login(
+				$helper->log_action(
 					$guid,
 					$email,
 					0,
@@ -159,7 +159,7 @@ class UserLogin extends Endpoints {
 			$db->do_query($query);
 
 			// log login
-			$helper->log_login(
+			$helper->log_action(
 				$guid,
 				$email,
 				0,
@@ -191,7 +191,7 @@ class UserLogin extends Endpoints {
 			$bearer = $authentication->issue_session($guid);
 
 			// log login
-			$helper->log_login(
+			$helper->log_action(
 				$guid,
 				$email,
 				1,
@@ -251,7 +251,7 @@ class UserLogin extends Endpoints {
 			$db->do_query($query);
 
 			// log login
-			$helper->log_login(
+			$helper->log_action(
 				$guid,
 				$email,
 				0,

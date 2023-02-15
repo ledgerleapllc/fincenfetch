@@ -20,12 +20,17 @@ class UserGetIplog extends Endpoints {
 
 		$query = "
 			SELECT
-			a.logged_in_at, a.email, a.successful, a.detail, 
-			a.ip, a.user_agent, a.source,
+			a.event_at, 
+			a.email, 
+			a.successful, 
+			a.detail, 
+			a.ip, 
+			a.user_agent, 
+			a.source,
 			b.role
-			FROM login_attempts AS a
+			FROM action_log AS a
 			LEFT JOIN users AS b
-			ON a.guid    = b.guid
+			ON    a.guid = b.guid
 			WHERE a.guid = '$user_guid'
 		";
 

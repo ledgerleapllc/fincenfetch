@@ -80,6 +80,7 @@ export default {
 
 			// progress tracking
 			progress: {
+				clicked:             true,
 				intro:               false,
 				company_name:        false,
 				dbas:                false,

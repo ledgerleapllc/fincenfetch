@@ -88,7 +88,7 @@ class UserRegister extends Endpoints {
 		);
 
 		/* log login */
-		$helper->log_login(
+		$helper->log_action(
 			$guid,
 			$email,
 			1,
