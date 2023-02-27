@@ -16,10 +16,26 @@ export default {
 			activity_log: [],
 			columnDefs:   [
 				{
-					field: 'name',
-					headerName: 'Company Name',
+					field: 'email',
+					headerName: 'Email',
 					sortable: true
 				},
+				{
+					field: 'event_at',
+					headerName: 'Date/Time',
+					sortable: true,
+					sort: 'desc'
+				},
+				{
+					field: 'detail',
+					headerName: 'Action',
+					sortable: true
+				},
+				{
+					field: 'ip',
+					headerName: 'Ip Address',
+					sortable: true
+				}
 			],
 			quickFilterText:     "",
 			quickFilterCategory: "",

@@ -6,7 +6,6 @@
  * @static max_size
  * @static user_info
  * @static firm_info
- * @static company_info
  * @static report_info
  * @static dba
  * @static applicant

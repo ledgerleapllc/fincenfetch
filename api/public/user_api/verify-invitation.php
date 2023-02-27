@@ -1,5 +1,4 @@
 <?php
-include_once('../../core.php');
 /**
  *
  * GET /user/verify-invitation
@@ -64,7 +63,7 @@ class UserVerifyInvitation extends Endpoints {
 
 		$firm_guid = $db->do_select("
 			SELECT firm_guid
-			FROM firm_company_relations
+			FROM  firm_company_relations
 			WHERE company_guid = '$guid'
 		");
 
@@ -76,7 +75,7 @@ class UserVerifyInvitation extends Endpoints {
 		// tag clicked_invite_at
 		$clicked = $db->do_select("
 			SELECT clicked_invite_at
-			FROM users
+			FROM  users
 			WHERE guid = '$guid'
 		");
 
@@ -86,8 +85,8 @@ class UserVerifyInvitation extends Endpoints {
 			$now = $helper->get_datetime();
 			$db->do_query("
 				UPDATE users
-				SET clicked_invite_at = '$now'
-				WHERE guid = '$guid'
+				SET   clicked_invite_at = '$now'
+				WHERE guid              = '$guid'
 			");
 		}
 

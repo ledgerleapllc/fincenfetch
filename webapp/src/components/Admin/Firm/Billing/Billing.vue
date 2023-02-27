@@ -14,12 +14,46 @@ export default {
 		return {
 			loading:    false,
 			billing:    [],
+			plan:       'Plus',
+			credits:    100,
+			price:      '$499/month',
+			next_bill:  '2022-03-31',
 			columnDefs: [
 				{
-					field: 'name',
-					headerName: 'Plan',
+					field: 'created_at',
+					headerName: 'Date',
 					sortable: true
 				},
+				{
+					field: 'type',
+					headerName: 'Type',
+					sortable: true
+				},
+				{
+					field: 'invoice_number',
+					headerName: 'Invoice Number',
+					sortable: true
+				},
+				{
+					field: 'plan',
+					headerName: 'Plan Tier',
+					sortable: true
+				},
+				{
+					field: 'credits',
+					headerName: 'Credits',
+					sortable: true
+				},
+				{
+					field: 'amount_billed',
+					headerName: 'Amount Billed',
+					sortable: true
+				},
+				{
+					field: 'approval_code',
+					headerName: 'Approval Code',
+					sortable: true
+				}
 			],
 			quickFilterText:     "",
 			quickFilterCategory: "",
@@ -103,11 +137,61 @@ export default {
 	<div class="container-fluid mt35">
 		<div class="row">
 			<div class="col-12">
+				<div class="float-right">
+					<button class="btn btn-yellow width-200 ml15 mb10">
+						Change Plan
+					</button>
+					<button class="btn btn-success width-200 ml15 mb10">
+						Add Report Credits
+					</button>
+				</div>
+
+				<table>
+					<tr>
+						<td class="td-left">
+							Current Plan:&ensp;
+						</td>
+						<td class="td-right">
+							{{ plan }}
+						</td>
+					</tr>
+					<tr>
+						<td class="td-left">
+							&ensp;
+						</td>
+						<td class="td-right">
+							{{ credits }} Report Credits
+						</td>
+					</tr>
+					<tr>
+						<td class="td-left">
+							&ensp;
+						</td>
+						<td class="td-right">
+							{{ price }}
+						</td>
+					</tr>
+					<tr>
+						<td class="td-left pt10">
+							Next Bill Date:&ensp;
+						</td>
+						<td class="td-right pt10">
+							{{ next_bill }}
+						</td>
+					</tr>
+				</table>
+
 				<div class="table-card mt20">
 					<div class="table-header">
 						<span>
 							<input v-model="quickFilterText" type="text" class="form-control form-control-sm width-200" placeholder="Search">
 						</span>
+
+						<div class="table-header-right">
+							<span>
+								<i class="fa fa-download text-blue pointer fs28 mt5" v-on:click="downloadCsv()"></i>
+							</span>
+						</div>
 					</div>
 
 					<ag-grid-vue
@@ -130,6 +214,18 @@ export default {
 
 <style scoped>
 
+.td-left {
+	font-weight: bold;
+	width: 150px;
+	padding-bottom: 5px;
+	white-space: nowrap;
+}
 
+.td-right {
+	font-size: 14px;
+	padding-bottom: 5px;
+	width: 150px;
+	white-space: nowrap;
+}
 
 </style>

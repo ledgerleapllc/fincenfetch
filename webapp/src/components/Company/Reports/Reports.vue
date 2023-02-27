@@ -104,7 +104,7 @@ export default {
 						let report_guid = event.data.report_guid;
 
 						if (report_guid) {
-							this.$root.routeTo(`/c/report/${report_guid}`);
+							this.$root.routeTo(`/c/report/${report_guid}/intro`);
 						}
 					}
 				},

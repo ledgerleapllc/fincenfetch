@@ -80,8 +80,8 @@ class Throttle {
 		$query = "
 			SELECT hit, last_request
 			FROM throttle
-			WHERE ip = '$this->ip'
-			AND uri = '$this->uri'
+			WHERE ip  = '$this->ip'
+			AND   uri = '$this->uri'
 		";
 
 		$selection = $db->do_select($query);
@@ -121,9 +121,11 @@ class Throttle {
 
 		$query = "
 			UPDATE throttle
-			SET hit = $new_minute_throttle, last_request = $this->now
-			WHERE ip = '$this->ip'
-			AND uri = '$this->uri'
+			SET 
+			hit          = $new_minute_throttle, 
+			last_request = $this->now
+			WHERE ip     = '$this->ip'
+			AND   uri    = '$this->uri'
 		";
 		$db->do_query($query);
 	}

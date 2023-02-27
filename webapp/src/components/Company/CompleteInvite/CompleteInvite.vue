@@ -27,6 +27,7 @@ export default {
 
 	methods: {
 		gotoReports() {
+			// this.$root.getMe();
 			window.location.href = '/c/reports';
 		}
 	},

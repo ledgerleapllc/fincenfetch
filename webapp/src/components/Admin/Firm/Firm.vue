@@ -170,7 +170,7 @@ export default {
 				></ClipLoader>
 				<p v-else class="bold fs20">
 					{{ selected_firm.pii_data.name }}
-					<span class="bold fs14">
+					<span class="bold fs12">
 						- Firm ID: 
 						<span class="text-blue">
 							{{ firm_guid }}

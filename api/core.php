@@ -396,7 +396,7 @@ function get_params() {
 	$jsonString = file_get_contents('php://input');
 	$json       = json_decode($jsonString, true);
 
-	if(!$json || count($json) == 0) {
+	if (!$json || count($json) == 0) {
 		return null;
 	}
 
@@ -505,7 +505,7 @@ function authenticate_session($required_clearance = 1) {
 	$verified       = (int)($selection['verified'] ?? 0);
 	$clearance      = 0;
 
-	if(!$selection) {
+	if (!$selection) {
 		_exit(
 			'error',
 			'Unauthorized',
@@ -514,7 +514,7 @@ function authenticate_session($required_clearance = 1) {
 		);
 	}
 
-	if($expires_at < $helper->get_datetime()) {
+	if ($expires_at < $helper->get_datetime()) {
 		$db->do_query("
 			DELETE FROM sessions
 			WHERE guid = '$guid'

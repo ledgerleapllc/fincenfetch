@@ -32,7 +32,7 @@ class Permissions {
 
 		$permissions = $db->do_select("
 			SELECT *
-			FROM permissions
+			FROM  permissions
 			WHERE guid = '$guid'
 		");
 
@@ -47,7 +47,7 @@ class Permissions {
 
 			$permissions = $db->do_select("
 				SELECT *
-				FROM permissions
+				FROM  permissions
 				WHERE guid = '$guid'
 			");
 		}

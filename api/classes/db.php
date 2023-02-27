@@ -113,6 +113,10 @@ class DB {
 						"type"    => "enum('initial', 'updated')",
 						"default" => "DEFAULT 'initial'"
 					),
+					"clicked"     => array(
+						"type"    => "int(1)",
+						"default" => "DEFAULT '0'"
+					),
 					"status"      => array(
 						"type"    => "enum('start', 'resume', 'view')",
 						"default" => "DEFAULT 'start'"
@@ -579,7 +583,7 @@ class DB {
 						"type"    => "varchar(255)",
 						"default" => "DEFAULT NULL"
 					),
-					"action_at"   => array(
+					"event_at"    => array(
 						"type"    => "timestamp",
 						"default" => "NULL DEFAULT NULL"
 					),

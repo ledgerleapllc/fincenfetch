@@ -591,6 +591,10 @@ export default {
 		},
 
 		formatZDate(date) {
+			if (typeof date.toISOString === 'function') {
+				date = date.toISOString();
+			}
+
 			date  = date.replace('T', ' ');
 			let s = date.split('.');
 			return s[0];
@@ -689,7 +693,7 @@ export default {
 			return `${s[0].toUpperCase()}${s.substring(1)}`;
 		},
 
-		inputIsNumberFormat(value) {
+		isNumberFormat(value) {
 			if (this.gettype(value) == 'string') {
 				let int = parseInt(value);
 				let str = int.toString();
@@ -709,6 +713,29 @@ export default {
 			}
 
 			return false;
+		},
+
+		inputIsZipCodeFormat(element) {
+			let key    = element.key ?? '';
+			let target = element.target ?? '';
+			let value  = target.value ?? '';
+			let newval = value + key;
+
+			if (
+				key == 'Backspace' ||
+				key == 'Delete'    ||
+				key == 'Tab'
+			) {
+				return true;
+			}
+
+			if (!/^[0-9]+$/.test(key)) {
+				return false;
+			}
+
+			if (value.length >= 5) {
+				return false;
+			}
 		},
 
 		inputIsDateFormat(element) {

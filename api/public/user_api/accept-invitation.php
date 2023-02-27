@@ -1,5 +1,4 @@
 <?php
-include_once('../../core.php');
 /**
  *
  * POST /user/accept-invitation
@@ -15,7 +14,7 @@ class UserAcceptInvitation extends Endpoints {
 		$hash     = '',
 		$password = ''
 	) {
-		global $helper, $db, $authentication;
+		global $helper, $db, $authentication, $permissions;
 
 		require_method('POST');
 
@@ -130,6 +129,7 @@ class UserAcceptInvitation extends Endpoints {
 
 		/* get new user */
 		$me = $helper->get_user($guid);
+		$permissions->allowed($guid);
 
 		if ($me) {
 			$subject = 'Hello and welcome to FincenFetch';

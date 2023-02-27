@@ -1,5 +1,4 @@
 <?php
-include_once('../../core.php');
 /**
  *
  * POST /user/create-report
@@ -41,7 +40,30 @@ class UserCreateReport extends Endpoints {
 		dlog('companies');
 		dlog($companies);
 
+		// initial checks
+		if (!$company_name) {
+			$company_name = null;
+		}
+
+		$helper->sanitize_input(
+			$company_name,
+			false,
+			2,
+			Regex::$company_name['char_limit'],
+			Regex::$company_name['pattern'],
+			'Company Name'
+		);
+
 		if ($company_guid) {
+			$helper->sanitize_input(
+				$company_guid,
+				true,
+				Regex::$guid['char_limit'],
+				Regex::$guid['char_limit'],
+				Regex::$guid['pattern'],
+				'Company GUID'
+			);
+
 			$selected_company = false;
 
 			// verify custody of company by guid
@@ -159,7 +181,7 @@ class UserCreateReport extends Endpoints {
 			}
 
 			// handle pii
-			$pii_data          = Structs::company_info;
+			$pii_data          = Structs::user_info;
 			$pii_data['name']  = $company_name;
 			$pii_enc           = $helper->encrypt_pii($pii_data);
 			$confirmation_code = $helper->generate_hash();

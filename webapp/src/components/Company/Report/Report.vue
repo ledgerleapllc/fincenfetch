@@ -6,69 +6,87 @@ import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import moment from 'moment';
 import { Modal } from 'vue-neat-modal';
 import { AgGridVue } from "ag-grid-vue3";
+import Datepicker from '@vuepic/vue-datepicker';
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "../../ag-theme-custom.css";
+
+import '@vuepic/vue-datepicker/dist/main.css'
 
 import 'vue-neat-modal/dist/vue-neat-modal.css';
 
 export default {
 	data() {
 		return {
-			report_guid:      this.$route.params.report_guid,
-			uri_category:     this.$route.params.category,
-			report: {
+			report_guid:       this.$route.params.report_guid,
+			uri_category:      this.$route.params.category,
+			report:            {
 				report_guid:   '',
 				company_guid:  '',
-				pii_data:      {},
-				filing_year:   '',
-				created_at:    '',
-				updated_at:    '',
-				firm_guid:     '',
-				report_type:   '',
-				status:        '',
+				pii_data:      {
+					report_year:        '',
+					company_name:       '',
+					dbas:               [],
+					office:             {},
+					formation_location: {},
+					tax_number:         {},
+					beneficial_owners:  []
+				},
+				filing_year:     '',
+				created_at:      '',
+				updated_at:      '',
+				firm_guid:       '',
+				report_type:     '',
+				status:          '',
 				previous_report: false,
-				reviewed:      false,
-				company:       {
-					guid:      '',
-					role:      'company',
-					email:     '',
-					pii_data: {
-						name:  '',
-						type:  '',
-						phone: ''
+				reviewed:        false,
+				company:         {
+					guid:        '',
+					role:        'company',
+					email:       '',
+					pii_data:    {
+						name:    '',
+						type:    '',
+						phone:   ''
 					},
-					status:    ''
+					status:      ''
 				}
 			},
-			report_default: {
-				report_guid:   '',
-				company_guid:  '',
-				pii_data:      {},
-				filing_year:   '',
-				created_at:    '',
-				updated_at:    '',
-				firm_guid:     '',
-				report_type:   '',
-				status:        '',
+			report_default:             {
+				report_guid:            '',
+				company_guid:           '',
+				pii_data:               {
+					report_year:        '',
+					company_name:       '',
+					dbas:               [],
+					office:             {},
+					formation_location: {},
+					tax_number:         {},
+					beneficial_owners:  []
+				},
+				filing_year:     '',
+				created_at:      '',
+				updated_at:      '',
+				firm_guid:       '',
+				report_type:     '',
+				status:          '',
 				previous_report: false,
-				reviewed:      false,
-				company:       {
-					guid:      '',
-					role:      'company',
-					email:     '',
-					pii_data:  {
-						name:  '',
-						type:  '',
-						phone: ''
+				reviewed:        false,
+				company:         {
+					guid:        '',
+					role:        'company',
+					email:       '',
+					pii_data:    {
+						name:    '',
+						type:    '',
+						phone:   ''
 					},
-					status:   ''
+					status:      ''
 				}
 			},
-			loading:     true,
-			columnDefs:  [
-			],
+			loading:       true,
+			loading_init:  true,
 			quickFilterText:     "",
 			quickFilterCategory: "",
 			gridApi:             null,
@@ -80,7 +98,7 @@ export default {
 
 			// progress tracking
 			progress: {
-				clicked:             true,
+				clicked:             false,
 				intro:               false,
 				company_name:        false,
 				dbas:                false,
@@ -93,14 +111,90 @@ export default {
 			},
 			progress_total:   0,
 			progressBarWidth: 0 + '%',
-			affirmation: false
+			affirmation:      false,
+
+			// dbas clone
+			dbas_clone: [],
+
+			// formation
+			formation_date: new Date(),
+
+			// office / US states
+			us_states: [
+				"Alabama",
+				"Alaska",
+				"Arizona",
+				"Arkansas",
+				"California",
+				"Colorado",
+				"Connecticut",
+				"Delaware",
+				"District Of Columbia",
+				"Florida",
+				"Georgia",
+				"Hawaii",
+				"Idaho",
+				"Illinois",
+				"Indiana",
+				"Iowa",
+				"Kansas",
+				"Kentucky",
+				"Louisiana",
+				"Maine",
+				"Maryland",
+				"Massachusetts",
+				"Michigan",
+				"Minnesota",
+				"Mississippi",
+				"Missouri",
+				"Montana",
+				"Nebraska",
+				"Nevada",
+				"New Hampshire",
+				"New Jersey",
+				"New Mexico",
+				"New York",
+				"North Carolina",
+				"North Dakota",
+				"Ohio",
+				"Oklahoma",
+				"Oregon",
+				"Pennsylvania",
+				"Rhode Island",
+				"South Carolina",
+				"South Dakota",
+				"Tennessee",
+				"Texas",
+				"Utah",
+				"Vermont",
+				"Virginia",
+				"Washington",
+				"West Virginia",
+				"Wisconsin",
+				"Wyoming",
+				//canada
+				"Alberta",
+				"British Columbia",
+				"Manitoba",
+				"New Brunswick",
+				"Newfoundland and Labrador",
+				"Nova Scotia",
+				"Northwest Territories",
+				"Nunavut",
+				"Ontario",
+				"Prince Edward Island",
+				"Quebec",
+				"Saskatchewan",
+				"Yukon"
+			]
 		}
 	},
 
 	components: {
 		ClipLoader,
 		AgGridVue,
-		Modal
+		Modal,
+		Datepicker
 	},
 
 	created() {
@@ -140,6 +234,7 @@ export default {
 			this.report_guid  = this.$route.params.report_guid;
 			this.uri_category = this.$route.params.category;
 		},
+		'progress.clicked':             "calculateProgress",
 		'progress.intro':               "calculateProgress",
 		'progress.company_name':        "calculateProgress",
 		'progress.dbas':                "calculateProgress",
@@ -175,6 +270,8 @@ export default {
 		async getReport() {
 			let fetch_bearer_token = this.$cookies.get('bearer_token');
 
+			this.dbas_clone = [];
+
 			const response = await api(
 				'GET',
 				'user/get-report',
@@ -191,6 +288,11 @@ export default {
 				this.report = response.detail ?? this.report_default;
 
 				// update progress based on report elements
+				// clicked
+				if (this.report.clicked) {
+					this.progress.clicked = true;
+				}
+
 				// intro
 				if (this.report.status != 'start') {
 					this.progress.intro = true;
@@ -210,6 +312,10 @@ export default {
 					Object.keys(this.report.pii_data.dbas).length > 0
 				) {
 					this.progress.dbas = true;
+
+					Object.keys(this.report.pii_data.dbas).forEach((key, index) => {
+						this.dbas_clone.push(this.report.pii_data.dbas[key]);
+					});
 				}
 
 				// address
@@ -225,6 +331,7 @@ export default {
 					this.report.pii_data.formation_location &&
 					this.report.pii_data.formation_location.state_or_province
 				) {
+					this.formation_date = this.report.pii_data.formation_location.formed_at;
 					this.progress.formation_location = true;
 				}
 
@@ -267,15 +374,73 @@ export default {
 				}
 
 				// done
-				this.loading = false;
+				this.loading      = false;
+				this.loading_init = false;
+
+				return true;
 			} else {
-				this.loading = false;
+				this.loading      = false;
+				this.loading_init = false;
 				this.$root.toast(
 					'',
 					response.message,
 					'error'
 				);
 			}
+		},
+
+		addDBA() {
+			let len  = Object.keys(this.dbas_clone).length;
+			let stop = false;
+
+			this.dbas_clone.forEach((key, index) => {
+				if (
+					!this.dbas_clone[index] ||
+					this.dbas_clone[index] == ""
+				) {
+					stop = true;
+				}
+			});
+
+			if (!stop) {
+				this.dbas_clone[len] = "";
+			}
+		},
+
+		removeDBA(index) {
+			this.dbas_clone.splice(index, 1);
+		},
+
+		async saveAndExit() {
+			if (this.uri_category == 'company-name') {
+				await this.saveProgress('company_name');
+			}
+
+			if (this.uri_category == 'dbas') {
+				await this.saveProgress('dbas');
+			}
+
+			if (this.uri_category == 'address') {
+				await this.saveProgress('address');
+			}
+
+			if (this.uri_category == 'formation-location') {
+				await this.saveProgress('formation_location');
+			}
+
+			if (this.uri_category == 'tax-number') {
+				await this.saveProgress('tax_number');
+			}
+
+			if (this.uri_category == 'beneficial-owners') {
+				await this.saveProgress('beneficial_owners');
+			}
+
+			if (this.uri_category == 'identification-docs') {
+				await this.saveProgress('identification_docs');
+			}
+
+			this.routeToReports();
 		},
 
 		routeToReports() {
@@ -303,42 +468,77 @@ export default {
 		pickupBookmark() {
 			if (!this.progress.company_name) {
 				this.uri_category = 'company-name';
+				this.$root.routeTo(`/c/report/${this.report_guid}/company-name`);
 				return;
 			}
 
 			if (!this.progress.dbas) {
-				this.uri_category = 'dbas';
+				this.$root.routeTo(`/c/report/${this.report_guid}/dbas`);
 				return;
 			}
 
 			if (!this.progress.address) {
-				this.uri_category = 'address';
+				this.$root.routeTo(`/c/report/${this.report_guid}/address`);
 				return;
 			}
 
 			if (!this.progress.formation_location) {
-				this.uri_category = 'formation-location';
+				this.$root.routeTo(`/c/report/${this.report_guid}/formation-location`);
 				return;
 			}
 
 			if (!this.progress.tax_number) {
-				this.uri_category = 'tax-number';
+				this.$root.routeTo(`/c/report/${this.report_guid}/tax-number`);
 				return;
 			}
 
 			if (!this.progress.beneficial_owners) {
-				this.uri_category = 'beneficial-owners';
+				this.$root.routeTo(`/c/report/${this.report_guid}/beneficial-owners`);
 				return;
 			}
 
 			if (!this.progress.identification_docs) {
-				this.uri_category = 'identification-docs';
+				this.$root.routeTo(`/c/report/${this.report_guid}/identification-docs`);
 				return;
 			}
 
 			if (!this.progress.review) {
-				this.uri_category = 'review';
+				this.$root.routeTo(`/c/report/${this.report_guid}/review`);
 				return;
+			}
+		},
+
+		nextStep() {
+			if (this.uri_category == 'intro') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/company-name`);
+			}
+
+			if (this.uri_category == 'company-name') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/dbas`);
+			}
+
+			if (this.uri_category == 'dbas') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/address`);
+			}
+
+			if (this.uri_category == 'address') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/formation-location`);
+			}
+
+			if (this.uri_category == 'formation-location') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/tax-number`);
+			}
+
+			if (this.uri_category == 'tax-number') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/beneficial-owners`);
+			}
+
+			if (this.uri_category == 'beneficial-owners') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/identification-docs`);
+			}
+
+			if (this.uri_category == 'identification-docs') {
+				this.$root.routeTo(`/c/report/${this.report_guid}/review`);
 			}
 		},
 
@@ -351,14 +551,193 @@ export default {
 				report_guid: this.report_guid
 			}
 
+			// intro
 			if (data_point == 'intro') {
 				params.intro = true;
 			}
 
+			// company name / report type
 			if (data_point == 'company_name') {
-				params.company_name    = true;  ////
-				params.previous_report = false; ////
+				params.company_name = this.$refs['company_name'].value;
+				let report_type1 = this.$refs['report_type1'].checked;
+				let report_type2 = this.$refs['report_type2'].checked;
+
+				if (report_type1) {
+					params.report_type = 'initial';
+				} 
+
+				if (report_type2) {
+					params.report_type = 'updated';
+				}
+
+				if (
+					!params.company_name ||
+					params.company_name == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please enter company name to continue',
+						'error'
+					);
+					return false;
+				}
+
+				if (
+					params.report_type != 'initial' &&
+					params.report_type != 'updated'
+				) {
+					this.$root.toast(
+						'',
+						'Please select an option above to continue',
+						'error'
+					);
+					return false;
+				}
 			}
+
+			// dbas
+			if (data_point == 'dbas') {
+				let ret_false = false;
+
+				Object.values(this.dbas_clone).forEach((value, index) => {
+					if (
+						!value ||
+						value  == ''
+					) {
+						this.$root.toast(
+							'',
+							'Please enter a DBA',
+							'error'
+						);
+						ret_false = true;
+					}
+				});
+
+				if (ret_false) {
+					return false;
+				}
+
+				params.dbas = this.dbas_clone;
+			}
+
+			// address
+			if (data_point == 'address') {
+				params.office_address1 = this.$refs['address1'].value;
+				params.office_address2 = this.$refs['address2'].value;
+				params.office_city     = this.$refs['city'].value;
+				params.office_state    = this.$refs['state'].value;
+				params.office_zip      = this.$refs['zip'].value;
+
+				if (
+					!params.office_address1 ||
+					params.office_address1  == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please enter primary office address',
+						'error'
+					);
+					return false;
+				}
+
+				if (
+					!params.office_city ||
+					params.office_city  == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please enter primary office city',
+						'error'
+					);
+					return false;
+				}
+
+				if (
+					!params.office_state ||
+					params.office_state  == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please select primary office state',
+						'error'
+					);
+					return false;
+				}
+
+				if (
+					!params.office_zip ||
+					params.office_zip  == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please enter primary office zip code',
+						'error'
+					);
+					return false;
+				}
+			}
+
+			// formation location
+			if (data_point == 'formation_location') {
+				params.formation_state = this.$refs['formation_state'].value;
+				params.formation_date  = this.$root.dateTimeToDate(
+					this.$root.formatZDate(
+						this.formation_date
+					)
+				);
+
+				if (
+					!params.formation_state ||
+					params.formation_state  == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please enter formation state',
+						'error'
+					);
+					return false;
+				}
+
+				if (
+					!params.formation_date ||
+					params.formation_date  == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please enter formation date',
+						'error'
+					);
+					return false;
+				}
+			}
+
+			// tax number
+			if (data_point == 'tax_number') {
+				params.tax_number = this.$refs['tax_number'].value;
+
+				if (
+					!params.tax_number ||
+					params.tax_number  == ''
+				) {
+					this.$root.toast(
+						'',
+						'Please enter tax number (EIN)',
+						'error'
+					);
+					return false;
+				}
+			}
+
+			// beneficial owners
+
+
+			// identification docs
+
+
+			// review
+			////
+
+			this.loading = true;
 
 			const response = await api(
 				'PUT',
@@ -370,9 +749,14 @@ export default {
 			this.$root.catch401(response);
 
 			if (response.status == 200) {
-				console.log(response);
-				this.getReport();
+				// console.log(response);
+				let report_refreshed = await this.getReport();
+
+				if (report_refreshed) {
+					this.nextStep();
+				}
 			} else {
+				this.loading = false;
 				this.$root.toast(
 					'',
 					response.message,
@@ -502,11 +886,14 @@ export default {
 		</div>
 
 		<div class="sub-view-right">
+			<div v-if="loading" class="ajax-box">
+				<ClipLoader size="45px" :color="this.$root.color_primary"></ClipLoader>
+			</div>
 			<div class="container-fluid sub-view-header">
 				<div class="row">
 					<div class="col-12">
 						<div class="mt0">
-							<button class="btn btn-success width-200 float-right" @click="routeToReports">
+							<button class="btn btn-success width-200 float-right" @click="saveAndExit">
 								Save & Exit
 							</button>
 
@@ -514,7 +901,7 @@ export default {
 								Report {{ this.$root.shortGUID(report.report_guid) }} for {{ report.company.pii_data.name }}
 							</p>
 
-							<p class="fs12 op8">
+							<p class="fs12 op8 inline">
 								Requested {{ this.$root.dateTimeToDate(report.created_at) }} by {{ this.$root.shortGUID(report.firm_guid) }}
 							</p>
 						</div>
@@ -611,6 +998,80 @@ export default {
 						<p class="mt20">
 							Please verify the registered legal name of your business is listed in the box below. Make changes if needed.
 						</p>
+
+						<p class="op7 fs14 mt20">
+							Company Name
+						</p>
+						<input 
+							type="text" 
+							class="form-control fincen-input width-400 mt5" 
+							ref="company_name"
+							:value="
+								report.pii_data.company_name
+								? report.pii_data.company_name
+								: report.company.pii_data.name
+							"
+						>
+
+						<p class="mt20">
+							Is this the first beneficial ownership report this company has filed?
+						</p>
+
+						<table class="mt15">
+							<tr>
+								<td>
+									<input 
+										type="radio" 
+										name="report_type" 
+										id="report_type1" 
+										class="form-radio pointer"
+										ref="report_type1"
+										checked
+									>
+								</td>
+								<td class="tr-right">
+									<label for="report_type1" class="pointer">
+										<span>
+											Yes, this is the first report.
+										</span>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input 
+										type="radio" 
+										name="report_type" 
+										id="report_type2" 
+										class="form-radio pointer"
+										ref="report_type2"
+									>
+								</td>
+								<td class="tr-right">
+									<label for="report_type2" class="pointer">
+										<span>
+											No, this company has filed a beneficial ownership report previously.
+										</span>
+									</label>
+								</td>
+							</tr>
+						</table>
+
+						<div class="mt40 mb100 width-300">
+							<ClipLoader 
+								v-if="loading" 
+								size="25px" 
+								:color="this.$root.color_primary"
+								class="pt10"
+							></ClipLoader>
+							<button 
+								v-else 
+								class="btn btn-yellow form-control" 
+								@click="saveProgress('company_name')"
+							>
+								Confirm Name & Continue
+							</button>
+						</div>
 					</div>
 
 					<!-- dbas -->
@@ -630,6 +1091,44 @@ export default {
 						<p class="mt20">
 							If you do not use any DBAs, simple click below to continue to the next step.
 						</p>
+
+						<div
+							class="width-400"
+							v-for="(dba, index) in dbas_clone"
+						>
+							<p class="op7 fs14 mt20">
+								Company Name
+							</p>
+							<input 
+								type="text" 
+								class="form-control fincen-input eyeball-input mt5"
+								v-model="dbas_clone[index]"
+							>
+							<div class="eyeball" @click="removeDBA(index)">
+								<i class="fa fa-trash text-red pointer"></i>
+							</div>
+						</div>
+
+						<button class="btn btn-success width-150 mt20" @click="addDBA">
+							<i class="fa fa-plus"></i>
+							Add DBA
+						</button>
+
+						<div class="mt40 mb100 width-300">
+							<ClipLoader 
+								v-if="loading" 
+								size="25px" 
+								:color="this.$root.color_primary"
+								class="pt10"
+							></ClipLoader>
+							<button 
+								v-else 
+								class="btn btn-yellow form-control" 
+								@click="saveProgress('dbas')"
+							>
+								Continue to next step
+							</button>
+						</div>
 					</div>
 
 					<!-- address -->
@@ -649,6 +1148,86 @@ export default {
 						<p class="mt20 bold">
 							Note: FinCEN does not allow submitting registered agent addresses, PO boxes, or other third party addresses. These may only be used by businesses based outside the U.S. that have no other U.S. address.
 						</p>
+
+						<p class="op7 fs14 mt20">
+							Street Address
+						</p>
+						<input 
+							type="text" 
+							class="form-control fincen-input width-400 mt5" 
+							ref="address1"
+							:value="report.pii_data.office.address1"
+						>
+
+						<p class="op7 fs14 mt20">
+							Apt, Suite, Etc (optional)
+						</p>
+						<input 
+							type="text" 
+							class="form-control fincen-input width-400 mt5" 
+							ref="address2"
+							:value="report.pii_data.office.address2"
+						>
+
+						<p class="op7 fs14 mt20">
+							City
+						</p>
+						<input 
+							type="text" 
+							class="form-control fincen-input width-400 mt5" 
+							ref="city"
+							:value="report.pii_data.office.city"
+						>
+
+						<div class="form-group">
+							<div class="inline mr10">
+								<p class="op7 fs14 mt20">
+									State
+								</p>
+								<select
+									class="form-select fincen-input width-200 mt5 pointer" 
+									ref="state"
+									:value="report.pii_data.office.state_or_province"
+								>
+									<option value="report.pii_data.office.state_or_province">
+										{{ report.pii_data.office.state_or_province }}
+									</option>
+
+									<option v-for="state in us_states">
+										{{ state }}
+									</option>
+								</select>
+							</div>
+
+							<div class="inline">
+								<p class="op7 fs14 mt20">
+									Zip
+								</p>
+								<input 
+									type="text" 
+									class="form-control fincen-input width-200 mt5" 
+									ref="zip"
+									:value="report.pii_data.office.postal_code"
+									:onkeydown="this.$root.inputIsZipCodeFormat"
+								>
+							</div>
+						</div>
+
+						<div class="mt40 mb100 width-300">
+							<ClipLoader 
+								v-if="loading" 
+								size="25px" 
+								:color="this.$root.color_primary"
+								class="pt10"
+							></ClipLoader>
+							<button 
+								v-else 
+								class="btn btn-yellow form-control" 
+								@click="saveProgress('address')"
+							>
+								Continue to next step
+							</button>
+						</div>
 					</div>
 
 					<!-- formation_location -->
@@ -668,6 +1247,54 @@ export default {
 						<p class="mt20">
 							Note: For Foreign (non-U.S.) businesses, select the State where you registered as a foreign company to do business in the U.S.
 						</p>
+
+						<p class="op7 fs14 mt20">
+							State of Formation
+						</p>
+						<select
+							class="form-select fincen-input width-300 mt5 pointer" 
+							ref="formation_state"
+							:value="report.pii_data.formation_location.state_or_province"
+						>
+							<option value="report.pii_data.formation_location.state_or_province">
+								{{ report.pii_data.formation_location.state_or_province }}
+							</option>
+
+							<option v-for="state in us_states">
+								{{ state }}
+							</option>
+						</select>
+
+						<p class="mt30">
+							Enter the date your business submitted its formation documents. You can typically search for your business on your State’s Division of Corporations website to find this information if you do not have it available.
+						</p>
+
+						<p class="op7 fs14 mt20">
+							Formation Date
+						</p>
+						<Datepicker 
+							class=" width-400 mt5"
+							:format="'yyyy/MM/dd'"
+							:preview-format="'yyyy/MM/dd'"
+							v-model="formation_date"
+							utc
+						></Datepicker>
+
+						<div class="mt40 mb100 width-300">
+							<ClipLoader 
+								v-if="loading" 
+								size="25px" 
+								:color="this.$root.color_primary"
+								class="pt10"
+							></ClipLoader>
+							<button 
+								v-else 
+								class="btn btn-yellow form-control" 
+								@click="saveProgress('formation_location')"
+							>
+								Continue to next step
+							</button>
+						</div>
 					</div>
 
 					<!-- tax_number -->
@@ -693,6 +1320,32 @@ export default {
 								Submit non-U.S. tax number instead
 							</span>
 						</p>
+
+						<p class="op7 fs14 mt20">
+							EIN Number
+						</p>
+						<input 
+							type="text" 
+							class="form-control fincen-input width-400 mt5" 
+							ref="tax_number"
+							:value="report.pii_data.tax_number"
+						>
+
+						<div class="mt40 mb100 width-300">
+							<ClipLoader 
+								v-if="loading" 
+								size="25px" 
+								:color="this.$root.color_primary"
+								class="pt10"
+							></ClipLoader>
+							<button 
+								v-else 
+								class="btn btn-yellow form-control" 
+								@click="saveProgress('tax_number')"
+							>
+								Continue to next step
+							</button>
+						</div>
 					</div>
 
 					<!-- beneficial_owners -->
@@ -794,7 +1447,7 @@ export default {
 									Business Legal Name
 								</td>
 								<td 
-									v-if="complete" 
+									v-if="progress.company_name" 
 									class="tr-right text-darkgreen bold"
 								>
 									Complete
@@ -811,8 +1464,22 @@ export default {
 								<td class="pt15 tr-left fs12">
 									Company Name:
 								</td>
-								<td class="pt15 tr-right bold fs12">
-									akjsdh ////
+								<td 
+									v-if="progress.company_name"
+									class="pt15 tr-right bold fs12"
+								>
+									{{ report.pii_data.company_name }}
+								</td>
+								<td 
+									v-else
+									class="pt15 tr-right bold fs12"
+								>
+									<label 
+										class="fs12 underline pointer text-blue"
+										@click="this.$root.routeTo('/c/report/'+this.report_guid+'/company-name')"
+									>
+										Return to section and finish
+									</label>
 								</td>
 							</tr>
 
@@ -821,7 +1488,9 @@ export default {
 									Report Type:
 								</td>
 								<td class="pt5 tr-right bold fs12">
-									Initial Report ////
+									{{
+										this.$root.ucfirst(report.report_type)
+									}}
 								</td>
 							</tr>
 						</table>
@@ -836,7 +1505,7 @@ export default {
 									Business DBAs
 								</td>
 								<td 
-									v-if="complete" 
+									v-if="progress.dbas" 
 									class="tr-right text-darkgreen bold"
 								>
 									Complete
@@ -849,9 +1518,32 @@ export default {
 								</td>
 							</tr>
 
-							<tr>
-								<td class="pt15 tr-left fs12">
-									None Listed ////
+							<tr 
+								v-if="progress.dbas"
+								class="fs12"
+								v-for="(dba, key, index) in report.pii_data.dbas"
+							>
+								<td class="tr-left pt5 fs12">
+									&ensp;
+								</td>
+								<td class="tr-right pt5 fs12">
+									{{ dba }}
+								</td>
+							</tr>
+							<tr
+								v-else
+								class="fs12"
+							>
+								<td class="tr-left pt5 fs12">
+									&ensp;
+								</td>
+								<td class="tr-right pt5 fs12">
+									<label 
+										class="fs12 underline pointer text-blue"
+										@click="this.$root.routeTo('/c/report/'+this.report_guid+'/dbas')"
+									>
+										Return to section and finish
+									</label>
 								</td>
 							</tr>
 						</table>
@@ -866,7 +1558,7 @@ export default {
 									Business Address
 								</td>
 								<td 
-									v-if="complete" 
+									v-if="progress.address" 
 									class="tr-right text-darkgreen bold"
 								>
 									Complete
@@ -883,8 +1575,40 @@ export default {
 								<td class="pt15 tr-left fs12">
 									Primary Address:
 								</td>
-								<td class="pt15 tr-right bold fs12">
-									123 akjsdh ////
+								<td 
+									v-if="progress.address"
+									class="pt15 tr-right bold fs12"
+								>
+									{{ report.pii_data.office.address1 }}
+								</td>
+								<td 
+									v-else
+									class="tr-right pt5 fs12"
+								>
+									<label 
+										class="fs12 underline pointer text-blue"
+										@click="this.$root.routeTo('/c/report/'+this.report_guid+'/address')"
+									>
+										Return to section and finish
+									</label>
+								</td>
+							</tr>
+
+							<tr v-if="report.pii_data.office.address2">
+								<td class="tr-left pt5 fs12">
+									&ensp;
+								</td>
+								<td class="tr-right pt5 fs12">
+									{{ report.pii_data.office.address2 }}
+								</td>
+							</tr>
+
+							<tr v-if="report.pii_data.office.city">
+								<td class="tr-left pt5 fs12">
+									&ensp;
+								</td>
+								<td class="tr-right pt5 fs12">
+									{{ report.pii_data.office.city }}
 								</td>
 							</tr>
 						</table>
@@ -899,7 +1623,7 @@ export default {
 									Formation Location
 								</td>
 								<td 
-									v-if="complete" 
+									v-if="progress.formation_location" 
 									class="tr-right text-darkgreen bold"
 								>
 									Complete
@@ -916,8 +1640,22 @@ export default {
 								<td class="pt15 tr-left fs12">
 									Formation Location:
 								</td>
-								<td class="pt15 tr-right bold fs12">
-									123 akjsdh ////
+								<td 
+									v-if="progress.formation_location"
+									class="pt15 tr-right bold fs12"
+								>
+									{{ report.pii_data.formation_location.state_or_province }}
+								</td>
+								<td 
+									v-else
+									class="tr-right pt5 fs12"
+								>
+									<label 
+										class="fs12 underline pointer text-blue"
+										@click="this.$root.routeTo('/c/report/'+this.report_guid+'/formation-location')"
+									>
+										Return to section and finish
+									</label>
 								</td>
 							</tr>
 
@@ -926,7 +1664,7 @@ export default {
 									Formation Date:
 								</td>
 								<td class="pt5 tr-right bold fs12">
-									2022-12-12 ////
+									{{ report.pii_data.formation_location.formed_at }}
 								</td>
 							</tr>
 						</table>
@@ -941,7 +1679,7 @@ export default {
 									Business Tax Number
 								</td>
 								<td 
-									v-if="complete" 
+									v-if="progress.tax_number" 
 									class="tr-right text-darkgreen bold"
 								>
 									Complete
@@ -958,8 +1696,22 @@ export default {
 								<td class="pt15 tr-left fs12">
 									EIN Number:
 								</td>
-								<td class="pt15 tr-right bold fs12">
-									88-123456789 ////
+								<td 
+									v-if="progress.tax_number"
+									class="pt15 tr-right bold fs12"
+								>
+									{{ report.pii_data.tax_number }}
+								</td>
+								<td 
+									v-else
+									class="tr-right pt5 fs12"
+								>
+									<label 
+										class="fs12 underline pointer text-blue"
+										@click="this.$root.routeTo('/c/report/'+this.report_guid+'/tax-number')"
+									>
+										Return to section and finish
+									</label>
 								</td>
 							</tr>
 						</table>
@@ -974,7 +1726,7 @@ export default {
 									Beneficial Owners
 								</td>
 								<td 
-									v-if="complete" 
+									v-if="progress.beneficial_owners" 
 									class="tr-right text-darkgreen bold"
 								>
 									Complete
@@ -986,7 +1738,29 @@ export default {
 									Incomplete
 								</td>
 							</tr>
+						</table>
 
+						<table
+							v-if="!progress.beneficial_owners"
+						>
+							<tr>
+								<td class="pt15 tr-left bold fs12">
+									Beneficial Owner #1
+								</td>
+								<td class="pt5 tr-right bold fs12">
+									<label 
+										class="fs12 underline pointer text-blue"
+										@click="this.$root.routeTo('/c/report/'+this.report_guid+'/beneficial-owners')"
+									>
+										Return to section and finish
+									</label>
+								</td>
+							</tr>
+						</table>
+						<table
+							v-else
+							v-for="(owner, key, index) in report.pii_data.beneficial_owners"
+						>
 							<tr>
 								<td class="pt15 tr-left bold fs12">
 									Beneficial Owner #1
@@ -1031,7 +1805,7 @@ export default {
 									Owner Documents
 								</td>
 								<td 
-									v-if="complete" 
+									v-if="progress.identification_docs" 
 									class="tr-right text-darkgreen bold"
 								>
 									Complete

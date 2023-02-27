@@ -54,8 +54,7 @@ export default {
 				{
 					field: '',
 					headerName: 'Ready for Review',
-					sortable: true,
-					filter: true
+					sortable: true
 				},
 			],
 			quickFilterText:     "",
@@ -147,16 +146,6 @@ export default {
 						</span>
 
 						<div class="table-header-right">
-							<span class="fs14 bold mr10">
-								Ready for Review:
-							</span>
-							<span class="mr20">
-								<select v-model="quickFilterCategory" class="form-select form-control-sm pointer width-200">
-								<option value="">Display All</option>
-								<option value="ready">Ready</option>
-								<option value="notready">Not Ready</option>
-							</select>
-							</span>
 							<span>
 								<i class="fa fa-download text-blue pointer fs28 mt5" v-on:click="downloadCsv()"></i>
 							</span>

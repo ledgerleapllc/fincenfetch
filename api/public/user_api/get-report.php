@@ -1,5 +1,4 @@
 <?php
-include_once('../../core.php');
 /**
  *
  * GET /user/get-report
@@ -64,6 +63,16 @@ class UserGetReport extends Endpoints {
 				400,
 				'Report does not exist'
 			);
+		}
+
+		if ($role == 'company') {
+			$db->do_query("
+				UPDATE reports
+				SET   clicked      = 1
+				WHERE company_guid = '$guid'
+				AND   report_guid  = '$report_guid'
+			");
+			$report['clicked'] = 1;
 		}
 
 		$pii_data = $helper->decrypt_pii($report['pii_data'] ?? '');
