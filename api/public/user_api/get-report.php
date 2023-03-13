@@ -39,10 +39,14 @@ class UserGetReport extends Endpoints {
 		// company
 		if ($role == 'company') {
 			$report = $db->do_select("
-				SELECT *
-				FROM  reports 
-				WHERE company_guid = '$guid'
-				AND   report_guid  = '$report_guid'
+				SELECT 
+				a.*,
+				b.email       AS firm_email
+				FROM  reports AS a
+				JOIN  users   AS b
+				ON    a.firm_guid    = b.guid
+				WHERE a.company_guid = '$guid'
+				AND   a.report_guid  = '$report_guid'
 			")[0] ?? array();
 		}
 

@@ -110,40 +110,44 @@ class DB {
 						"default" => "DEFAULT NULL"
 					),
 					"report_type" => array(
-						"type"    => "enum('initial', 'updated')",
+						"type"    => "enum('initial', 'updated', 'correction')",
 						"default" => "DEFAULT 'initial'"
-					),
-					"clicked"     => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT '0'"
 					),
 					"status"      => array(
 						"type"    => "enum('start', 'resume', 'view')",
 						"default" => "DEFAULT 'start'"
 					),
+					"link_sent"   => array(
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
+					),
+					"clicked"     => array(
+						"type"    => "int(1)",
+						"default" => "DEFAULT '0'"
+					),
+					"report_started" => array(
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
+					),
+					"report_returned" => array(
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
+					),
+					"report_reviewed" => array(
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
+					),
+					"report_review_complete" => array(
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
+					),
+					"marked_filed"=> array(
+						"type"    => "int(1)",
+						"default" => "DEFAULT '0'"
+					),
 					"pii_data"    => array(
 						"type"    => "MEDIUMTEXT",
 						"default" => "NOT NULL"
-					),
-					"filing_year" => array(
-						"type"    => "varchar(6)",
-						"default" => ""
-					),
-					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					),
-					"updated_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
-					),
-					"previous_report" => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT '0'"
-					),
-					"reviewed"    => array(
-						"type"    => "int(1)",
-						"default" => "DEFAULT '0'"
 					)
 				),
 				"insert_records"  => array()
@@ -159,8 +163,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 				),
 				"primary"         => "email",
@@ -193,12 +197,12 @@ class DB {
 						"default" => "DEFAULT NULL"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"sent_at"     => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"complete"    => array(
 						"type"    => "int",
@@ -223,16 +227,16 @@ class DB {
 						"default" => ""
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"expires_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"limit_at"    => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"primary"         => "id",
@@ -267,8 +271,8 @@ class DB {
 						"default" => "DEFAULT NULL"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"primary"         => "guid",
@@ -293,8 +297,8 @@ class DB {
 						"default" => ""
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"insert_records"  => array()
@@ -318,20 +322,20 @@ class DB {
 						"default" => ""
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"verified"    => array(
 						"type"    => "int",
 						"default" => "DEFAULT '0'"
 					),
 					"verified_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"clicked_invite_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"password"    => array(
 						"type"    => "varchar(255)",
@@ -389,8 +393,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"associated_at"=> array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"status"      => array(
 						"type"    => "enum('invited', 'trial', 'active', 'cancelled')",
@@ -414,8 +418,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"associated_at"=> array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"insert_records"  => array()
@@ -431,8 +435,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"associated_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"insert_records"  => array()
@@ -448,8 +452,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"code"        => array(
 						"type"    => "varchar(12)",
@@ -466,8 +470,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"expires_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"insert_records"  => array()
@@ -529,8 +533,8 @@ class DB {
 						"default" => "DEFAULT '0'"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"insert_records"  => array()
@@ -550,8 +554,8 @@ class DB {
 						"default" => "DEFAULT NULL"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"active"      => array(
 						"type"    => "int",
@@ -567,8 +571,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"expires_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"insert_records"  => array()
@@ -584,8 +588,8 @@ class DB {
 						"default" => "DEFAULT NULL"
 					),
 					"event_at"    => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"successful"  => array(
 						"type"    => "int(1)",
@@ -617,8 +621,8 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"updated_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"primary"         => "guid",
@@ -659,16 +663,16 @@ class DB {
 						"default" => "DEFAULT ''"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"activate_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"deactivate_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"primary"         => "id",
@@ -685,12 +689,12 @@ class DB {
 						"default" => "NOT NULL"
 					),
 					"created_at"  => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					),
 					"dismissed_at" => array(
-						"type"    => "timestamp",
-						"default" => "NULL DEFAULT NULL"
+						"type"    => "varchar(64)",
+						"default" => "DEFAULT NULL"
 					)
 				),
 				"insert_records"  => array()

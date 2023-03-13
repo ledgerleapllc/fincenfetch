@@ -36,7 +36,7 @@ import CompanyAcceptInvitation from '@/components/Company/AcceptInvitation/Accep
 import CompanyCompleteInvite from '@/components/Company/CompleteInvite/CompleteInvite.vue';
 import CompanyReports from '@/components/Company/Reports/Reports.vue';
 import CompanyReport from '@/components/Company/Report/Report.vue';
-import CompanyAccount from '@/components/Company/Account/Account.vue';
+import CompanySettings from '@/components/Company/Settings/Settings.vue';
 
 import './assets/css/main.css'
 
@@ -420,10 +420,10 @@ const router = createRouter({
 			}
 		},
 		{
-			path: '/c/account',
+			path: '/c/settings',
 			redirect: to => {
 				return {
-					path: '/c/account/detail'
+					path: '/c/settings/detail'
 				}
 			},
 			meta: {
@@ -431,9 +431,9 @@ const router = createRouter({
 			}
 		},
 		{
-			path: '/c/account/:category?',
-			name: 'CompanyAccount',
-			component: CompanyAccount,
+			path: '/c/settings/:category?',
+			name: 'CompanySettings',
+			component: CompanySettings,
 			meta: {
 				title: `${app_name} - Account Settings`,
 				display_name: 'Account Settings',

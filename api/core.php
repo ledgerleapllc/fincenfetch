@@ -88,6 +88,7 @@ include_once('classes/excel.php');
 include_once('classes/structs.php');
 include_once('classes/regex.php');
 include_once('classes/permissions.php');
+include_once('classes/report.php');
 
 /**
  * Instantiate
@@ -396,7 +397,7 @@ function get_params() {
 	$jsonString = file_get_contents('php://input');
 	$json       = json_decode($jsonString, true);
 
-	if (!$json || count($json) == 0) {
+	if (!$json || empty($json)) {
 		return null;
 	}
 
@@ -708,4 +709,5 @@ function generateCSRFToken() {
 }
 
 define('CSRF_TOKEN', generateCSRFToken());
+
 ?>

@@ -117,7 +117,7 @@ export default {
 				:class="uri_category == 'access-log' ? 'sub-view-menu-item-active' : ''"
 				@click="this.$root.routeTo('/f/company/'+company_guid+'/access-log')"
 			>
-				Access Log
+				Activity Log
 			</div>
 			<div 
 				class="sub-view-menu-item"
@@ -129,8 +129,8 @@ export default {
 		</div>
 		<div class="sub-view-right">
 			<div class="sub-view-header">
-				<p class="bold float-right fs14">
-					Account Created:&ensp;
+				<p class="bold float-right fs14 mt5">
+					Company Created:&ensp;
 					<ClipLoader 
 						v-if="selected_company.created_at === null" 
 						size="12px" 
@@ -151,9 +151,9 @@ export default {
 				<p v-else class="bold fs20">
 					{{ selected_company.pii_data.name }}
 					<span class="bold fs14">
-						- User ID: 
+						- Company ID: 
 						<span class="text-blue">
-							{{ company_guid }}
+							{{ this.$root.shortGUID(company_guid) }}
 						</span>
 					</span>
 				</p>
@@ -181,19 +181,6 @@ export default {
 					></ClipLoader>
 					<span v-else class="text-blue">
 						{{ selected_company.pii_data.phone }}
-					</span>
-				</p>
-
-				<p class="bold mt5">
-					Total Companies:&ensp;
-					<ClipLoader 
-						v-if="selected_company.total_companies === null" 
-						size="15px" 
-						:color="this.$root.color_primary"
-						class="inline"
-					></ClipLoader>
-					<span v-else class="text-blue">
-						{{ selected_company.companies.length }}
 					</span>
 				</p>
 

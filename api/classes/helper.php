@@ -31,7 +31,7 @@
  * @method string  get_filing_year()
  * @method bool    schedule_email()
  * @method bool    send_mfa()
- * @method string  verify_mfa()             String returned is a success/error reason message.
+ * @method string  verify_mfa()   String returned is a success/error reason message.
  * @method bool    create_mfa_allowance()
  * @method bool    consume_mfa_allowance()
  * @method string  b_encode()
@@ -1737,14 +1737,93 @@ class Helper {
 		return false;
 	}
 
+	public static $states = array(
+		'AK' => "Alaska",
+		'AZ' => "Arizona",
+		'AR' => "Arkansas",
+		'CA' => "California",
+		'CO' => "Colorado",
+		'CT' => "Connecticut",
+		'DE' => "Delaware",
+		'DC' => "District Of Columbia",
+		'FL' => "Florida",
+		'GA' => "Georgia",
+		'HI' => "Hawaii",
+		'ID' => "Idaho",
+		'IL' => "Illinois",
+		'IN' => "Indiana",
+		'IA' => "Iowa",
+		'KS' => "Kansas",
+		'KY' => "Kentucky",
+		'LA' => "Louisiana",
+		'ME' => "Maine",
+		'MD' => "Maryland",
+		'MA' => "Massachusetts",
+		'MI' => "Michigan",
+		'MN' => "Minnesota",
+		'MS' => "Mississippi",
+		'MO' => "Missouri",
+		'MT' => "Montana",
+		'NE' => "Nebraska",
+		'NV' => "Nevada",
+		'NH' => "New Hampshire",
+		'NJ' => "New Jersey",
+		'NM' => "New Mexico",
+		'NY' => "New York",
+		'NC' => "North Carolina",
+		'ND' => "North Dakota",
+		'OH' => "Ohio",
+		'OK' => "Oklahoma",
+		'OR' => "Oregon",
+		'PA' => "Pennsylvania",
+		'RI' => "Rhode Island",
+		'SC' => "South Carolina",
+		'SD' => "South Dakota",
+		'TN' => "Tennessee",
+		'TX' => "Texas",
+		'UT' => "Utah",
+		'VT' => "Vermont",
+		'VA' => "Virginia",
+		'WA' => "Washington",
+		'WV' => "West Virginia",
+		'WI' => "Wisconsin",
+		'WY' => "Wyoming",
+		// canada
+		'AB' => 'Alberta',
+		'BC' => 'British Columbia',
+		'MB' => 'Manitoba',
+		'NB' => 'New Brunswick',
+		'NL' => 'Newfoundland and Labrador',
+		'NS' => 'Nova Scotia',
+		'NT' => 'Northwest Territories',
+		'NU' => 'Nunavut',
+		'ON' => 'Ontario',
+		'PE' => 'Prince Edward Island',
+		'QC' => 'Quebec',
+		'SK' => 'Saskatchewan',
+		'YT' => 'Yukon'
+	);
+
 	/**
 	 *
-	 * Verify ISO 3166 Country Codes
+	 * Verify US States
 	 *
-	 * @param  string  $country
+	 * @param  string  $state
 	 * @return bool
 	 *
 	 */
+	public static function is_state(string $state) {
+		if (in_array($state, self::$states)) {
+			return true;
+		}
+
+		if (array_key_exists($state, self::$states)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public static $countries = array(
 		'AF' => 'Afghanistan',
 		'AX' => 'Aland Islands',
@@ -1993,6 +2072,14 @@ class Helper {
 		'ZW' => 'Zimbabwe'
 	);
 
+	/**
+	 *
+	 * Verify ISO 3166 Country Codes
+	 *
+	 * @param  string  $country
+	 * @return bool
+	 *
+	 */
 	public static function ISO3166_country(string $country) {
 		if (in_array($country, self::$countries)) {
 			return true;

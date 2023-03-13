@@ -81,7 +81,7 @@ export default {
 						'main-nav-item-active' : 
 						''
 					"
-					@click="this.$root.routeTo('/a/settings')"
+					@click="this.$root.routeTo('/a/settings/detail')"
 				>
 					Settings
 				</div>
@@ -158,7 +158,7 @@ export default {
 						'main-nav-item-active' : 
 						''
 					"
-					@click="this.$root.routeTo('/f/settings')"
+					@click="this.$root.routeTo('/f/settings/detail')"
 				>
 					Settings
 				</div>
@@ -199,7 +199,7 @@ export default {
 						'main-nav-item-active' : 
 						''
 					"
-					@click="this.$root.routeTo('/c/settings')"
+					@click="this.$root.routeTo('/c/settings/detail')"
 				>
 					Settings
 				</div>

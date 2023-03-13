@@ -591,12 +591,16 @@ export default {
 		},
 
 		formatZDate(date) {
+			console.log(date);
 			if (typeof date.toISOString === 'function') {
 				date = date.toISOString();
 			}
+			console.log(date);
 
 			date  = date.replace('T', ' ');
+			console.log(date);
 			let s = date.split('.');
+			console.log(s);
 			return s[0];
 		},
 
@@ -926,6 +930,22 @@ export default {
 	border-bottom: 1px solid #ddd;
 	font-size: 18px;
 	font-weight: bold;
+}
+
+.progress2-wrap {
+	background-color: #DAD9E0;
+	width: 100%;
+	height: 5px;
+	border-radius: 2px;
+	overflow: hidden;
+	box-shadow: 0px 0px 2px #e0e0e0;
+	position: relative;
+}
+
+.progress2 {
+	height: 100%;
+	width: 0;
+	background-color: var(--color-primary);
 }
 
 @media all and (max-width: 991px) {

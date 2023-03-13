@@ -27,70 +27,105 @@ class Structs {
 	);
 
 	public const report_info = array(
-		"report_year"        => "YYYY",
-		"company_name"       => "",
-		"dbas"               => array(
+		"company_name"               => "",
+		"foreign_investment"         => false,
+		"exempt"                     => false,
+		"request_fincen_number"      => false,
+		"has_dbas"                   => null,
+		"dbas"                       => array(
 			/* hash('dba'.$company_guid.$report_guid.$index) => Structs::dba */
 		),
-		"office"             => Structs::office,
-		"formation_location" => Structs::formation_location,
-		"tax_number"         => "",
-		"beneficial_owners"  => array(
+		"tax_number_type"            => "",
+		"tax_number"                 => "",
+		"foreign_tax_number_country" => "",
+		"company_origination_type"   => "",
+		"state_of_formation"         => "",
+		"tribe_of_formation"         => "",
+		"state_of_registration"      => "",
+		"tribe_of_registration"      => "",
+		"formation_date"             => "",
+		"us_office_address_1"        => "",
+		"us_office_address_2"        => "",
+		"us_office_city"             => "",
+		"us_office_state"            => "",
+		"us_office_zip"              => "",
+		"company_before_2024"        => null,
+		"applicant_needed"           => null,
+		"applicants"                 => array(
+			/* hash('applicant'.$company_guid.$report_guid.$index) => Structs::applicant */
+		),
+		"beneficial_owners"          => array(
 			/* hash('beneficial_owner'.$company_guid.$report_guid.$index) => Structs::beneficial_owner */
 		)
 	);
 
 	public const dba = "";
 
-	public const office = array(
-		"created_at"        => "YYYY-mm-dd HH:ii:ss UTC",
-		"updated_at"        => "YYYY-mm-dd HH:ii:ss UTC",
-		"country"           => "",
-		"address1"          => "",
-		"address2"          => "",
-		"city"              => "",
-		"state_or_province" => "",
-		"postal_code"       => ""
-	);
-
-	public const formation_location = array(
-		"created_at"        => "YYYY-mm-dd HH:ii:ss UTC",
-		"updated_at"        => "YYYY-mm-dd HH:ii:ss UTC",
-		"formed_at"         => "YYYY-mm-dd HH:ii:ss UTC",
-		"state_or_province" => ""
+	public const applicant = array(
+		"created_at"           => "",
+		"updated_at"           => "",
+		"has_fincen_id"        => false,
+		"fincen_id"            => "",
+		"first_name"           => "",
+		"middle_name"          => "",
+		"last_name"            => "",
+		"suffix"               => "",
+		"date_of_birth"        => "",
+		"address_type"         => "",
+		"country"              => "",
+		"us_address_1"         => "", 
+		"us_address_2"         => "",
+		"us_city"              => "",
+		"us_state"             => "",
+		"us_zip"               => "",
+		"foreign_address_1"    => "", 
+		"foreign_address_2"    => "",
+		"foreign_city"         => "",
+		"foreign_province"     => "",
+		"foreign_postalcode"   => "",
+		"identifying_document" => array(
+			/* Structs::identifying_document */
+		)
 	);
 
 	public const beneficial_owner = array(
-		"created_at"              => "YYYY-mm-dd HH:ii:ss UTC",
-		"updated_at"              => "YYYY-mm-dd HH:ii:ss UTC",
-		"owner_type"              => "enum[individual, entity]",
-		"first_name"              => "",
-		"middle_name"             => "",
-		"last_name"               => "",
-		"suffix"                  => "",
-		"dob"                     => "YYYY-mm-dd",
-		"is_us_citizen"           => true,
-		"country_of_citizenship"  => "",
-		"more_than_25"            => true,
-		"percent_owned"           => 0.25,
-		"important_decisions"     => true,
-		"owner_title"             => "",
-		"address"                 => array(
-			"country"             => "",
-			"address1"            => "",
-			"address2"            => "",
-			"city"                => "",
-			"state_or_province"   => "",
-			"postal_code"         => ""
-		),
-		"identifying_document"    => array(
-			"type"                => "enum[driver_license, passport, government_issue_id]",
-			"number"              => "",
-			"issue_date"          => "YYYY-mm-dd",
-			"expire_date"         => "YYYY-mm-dd",
-			"country_of_issuance" => "",
-			"sha256_checksum"     => ""
+		"created_at"           => "",
+		"updated_at"           => "",
+		"has_fincen_id"        => false,
+		"fincen_id"            => "",
+		"is_exempt_entity"     => false,
+		"exempt_entity_name"   => "",
+		"first_name"           => "",
+		"middle_name"          => "",
+		"last_name"            => "",
+		"suffix"               => "",
+		"date_of_birth"        => "",
+		"country"              => "",
+		"us_address_1"         => "", 
+		"us_address_2"         => "",
+		"us_city"              => "",
+		"us_state"             => "",
+		"us_zip"               => "",
+		"foreign_address_1"    => "", 
+		"foreign_address_2"    => "",
+		"foreign_city"         => "",
+		"foreign_province"     => "",
+		"foreign_postalcode"   => "",
+		"identifying_document" => array(
+			/* Structs::identifying_document */
 		)
+	);
+
+	public const identifying_document = array(
+		"type"                    => "enum[drivers_license, state_or_tribe_id, us_passport, foreign_passport]",
+		"document_number"         => "",
+		"drivers_license_state"   => "",
+		"id_card_state"           => "",
+		"id_card_tribe"           => "",
+		"id_card_state_or_tribe"  => "",
+		"foreign_passport_issuer" => "",
+		"file_url"                => "",
+		"file_name"               => ""
 	);
 }
 

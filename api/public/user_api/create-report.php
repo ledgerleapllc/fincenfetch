@@ -246,7 +246,7 @@ class UserCreateReport extends Endpoints {
 			SELECT *
 			FROM  reports
 			WHERE company_guid = '$company_guid'
-			AND   filing_year  = '$filing_year'
+			AND   link_sent LIKE '$filing_year-'
 		")[0] ?? null;
 
 		// and a check for pre-existing reports for this company
@@ -272,9 +272,6 @@ class UserCreateReport extends Endpoints {
 			// define report object
 			$pii_data = Structs::report_info;
 
-			// add report_year
-			$pii_data['report_year'] = $filing_year;
-
 			// finish encoding initial data, and encrypt.
 			$pii_enc  = $helper->encrypt_pii($pii_data);
 
@@ -291,19 +288,15 @@ class UserCreateReport extends Endpoints {
 					company_guid,
 					firm_guid,
 					report_type,
-					pii_data,
-					created_at,
-					updated_at,
-					filing_year
+					link_sent,
+					pii_data
 				) VALUES (
 					'$report_guid',
 					'$company_guid',
 					'$firm_guid',
 					'$report_type',
-					'$pii_enc',
 					'$now',
-					'$now',
-					'$filing_year'
+					'$pii_enc'
 				)
 			");
 		}

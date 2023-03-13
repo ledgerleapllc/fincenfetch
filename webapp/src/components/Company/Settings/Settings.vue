@@ -12,7 +12,7 @@ export default {
 	data() {
 		return {
 			uri_category: this.$route.params.category,
-			clipLoading:  false
+			loading:  false
 		}
 	},
 
@@ -34,7 +34,7 @@ export default {
 			this.uri_category != 'iplog'
 		) {
 			this.uri_category = 'detail';
-			this.$root.routeTo(`/c/account/detail`);
+			this.$root.routeTo(`/c/settings/detail`);
 		}
 	},
 
@@ -50,39 +50,38 @@ export default {
 </script>
 
 <template>
-	<div v-if="clipLoading" class="ajax-box">
-		<ClipLoader size="45px" color="#ff2d2e"></ClipLoader>
-	</div>
-	<div class="top-banner">
-		<div
-			@click="
-				this.$root.routeTo(`/c/account/detail`);
-				this.uri_category = 'detail';
-			"
-			v-bind:class="
-				'spa-tab ' +
-				(this.uri_category == 'detail' ? 'spa-tab-active' : '')
-			"
-		>
-			User Details
+	<div class="sub-view">
+		<div class="sub-view-left">
+			<p class=" text-blue fs18 bold">
+				Navigation
+			</p>
+
+			<div 
+				class="sub-view-menu-item mt30"
+				:class="uri_category == 'detail' ? 'sub-view-menu-item-active' : ''"
+				@click="this.$root.routeTo('/c/settings/detail')"
+			>
+				User Details
+			</div>
+
+			<div 
+				class="sub-view-menu-item"
+				:class="uri_category == 'iplog' ? 'sub-view-menu-item-active' : ''"
+				@click="this.$root.routeTo('/c/settings/iplog')"
+			>
+				IP Log
+			</div>
 		</div>
 
-		<div
-			@click="
-				this.$root.routeTo(`/c/account/iplog`);
-				this.uri_category = 'iplog';
-			"
-			v-bind:class="
-				'spa-tab ' +
-				(this.uri_category == 'iplog' ? 'spa-tab-active' : '')
-			"
-		>
-			IP Log
+		<div class="sub-view-right">
+			<div v-if="loading" class="ajax-box">
+				<ClipLoader size="45px" :color="this.$root.color_primary"></ClipLoader>
+			</div>
+
+			<UserDetail v-if="this.uri_category == 'detail'"></UserDetail>
+			<UserIpLog v-else-if="this.uri_category == 'iplog'"></UserIpLog>
 		</div>
 	</div>
-
-	<UserDetail v-if="this.uri_category == 'detail'"></UserDetail>
-	<UserIpLog v-else-if="this.uri_category == 'iplog'"></UserIpLog>
 
 	<div id="updateEmailModal">
 		<div class="izi-padding">

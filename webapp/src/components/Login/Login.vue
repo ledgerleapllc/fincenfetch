@@ -99,7 +99,10 @@ export default {
 				</div>
 
 				<div v-show="step == 1" class="login-form-wrap">
-					<label>Log in</label>
+					<p class="bold">
+						Log in
+					</p>
+
 					<div class="form-group login-form mt20">
 						<form @submit.prevent>
 							<input class="form-control fincen-input" v-model="this.$root.inputEmail" type="email" placeholder="Email Address" ref="email_ref" autofocus autosave="" autocomplete="">

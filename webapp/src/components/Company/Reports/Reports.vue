@@ -37,14 +37,20 @@ export default {
 					filter: true,
 					sortable: true,
 					cellRenderer: (event) => {
-						let status = event.data.status;
+						let status   = event.data.status;
+						let returned = event.data.report_returned;
+						let reviewed = event.data.report_reviewed;
 
 						if (status == 'start') {
 							return 'Not started';
 						}
 
 						if (status == 'resume') {
-							return 'Started';
+							if (returned) {
+								return 'Awaiting review';
+							} else {
+								return 'Started';
+							}
 						}
 
 						if (status == 'view') {
@@ -53,20 +59,23 @@ export default {
 					}
 				},
 				{
-					field: 'created_at',
+					field: 'link_sent',
 					headerName: 'Date Requested',
 					sortable: true,
-					sort: 'desc'
+					sort: 'desc',
+					cellRenderer: (event) => {
+						return this.$root.dateTimeToDate(event.data.link_sent);
+					},
 				},
 				{
-					field: 'firm_guid',
+					field: 'firm_email',
 					headerName: 'Requested By',
 					sortable: true,
 					cellRenderer: (event) => {
-						let firm_guid = event.data.firm_guid;
+						let firm_email = event.data.firm_email;
 
-						if (firm_guid) {
-							return this.$root.shortGUID(firm_guid);
+						if (firm_email) {
+							return this.$root.shortGUID(firm_email);
 						}
 					},
 				},
@@ -85,18 +94,24 @@ export default {
 					headerName: '',
 					sortable: false,
 					cellRenderer: (event) => {
-						let status = event.data.status;
+						let status   = event.data.status;
+						let returned = event.data.report_returned;
+						let reviewed = event.data.report_reviewed;
 
 						if (status == 'start') {
-							return `<button class="btn btn-sm btn-green fs11 width-100">Start</button>`;
+							return `<button class="btn btn-sm btn-green fs11 form-control width-100">Start</button>`;
 						}
 
 						if (status == 'resume') {
-							return `<button class="btn btn-sm btn-yellow fs11 width-100">Resume</button>`;
+							if (returned) {
+								return `<button class="btn btn-sm btn-yellow fs11 form-control width-100">View</button>`;
+							} else {
+								return `<button class="btn btn-sm btn-yellow fs11 form-control width-100">Resume</button>`;
+							}
 						}
 
 						if (status == 'view') {
-							return `<button class="btn btn-sm btn-grey fs11 width-100">View</button>`;
+							return `<button class="btn btn-sm btn-grey fs11 form-control width-100">View</button>`;
 						}
 					},
 

@@ -97,7 +97,7 @@ export default {
 
 <template>
 	<div class="login-container">
-		<div class="signup-box-wrap">
+		<div class="login-box-wrap">
 			<div v-if="loading" class="ajax-box">
 				<ClipLoader size="45px" :color="this.$root.color_primary"></ClipLoader>
 			</div>

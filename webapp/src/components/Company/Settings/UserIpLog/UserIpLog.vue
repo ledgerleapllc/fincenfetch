@@ -93,7 +93,7 @@ export default {
 	<div class="container-fluid pt15">
 		<div class="row">
 			<div class="col-12 plr20">
-				<div class="card">
+				<!-- <div class="card"> -->
 					<div class="card-title mb0">
 						<i class="fa fa-cog green"></i>
 						<b>
@@ -128,7 +128,7 @@ export default {
 							</ag-grid-vue>
 						</div>
 					</div>
-				</div>
+				<!-- </div> -->
 			</div>
 		</div>
 	</div>

@@ -25,8 +25,12 @@ class UserGetReports extends Endpoints {
 		// company
 		if ($role == 'company') {
 			$reports = $db->do_select("
-				SELECT *
-				FROM  reports 
+				SELECT 
+				a.*,
+				b.email       AS firm_email
+				FROM  reports AS a
+				JOIN  users   AS b
+				ON    a.firm_guid  = b.guid
 				WHERE company_guid = '$guid'
 			") ?? array();
 		}
@@ -40,8 +44,12 @@ class UserGetReports extends Endpoints {
 				$company_guid = $company['guid'] ?? '';
 
 				$report = $db->do_select("
-					SELECT *
-					FROM  reports 
+					SELECT 
+					a.*, 
+					b.email       AS firm_email
+					FROM  reports AS a
+					JOIN  users   AS b
+					ON    a.firm_guid  = b.guid
 					WHERE company_guid = '$company_guid'
 				")[0] ?? null;
 
